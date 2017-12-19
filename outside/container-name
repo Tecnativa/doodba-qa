@@ -1,0 +1,16 @@
+#!/usr/bin/env python3
+"""
+Ensure unique and descriptive container names
+"""
+# TODO Remove this file & feature when fixed the following issue
+# HACK https://github.com/docker/compose/issues/4688
+
+import os
+from uuid import uuid4
+
+print(
+    "{COMPOSE_PROJECT_NAME}-{CONTAINER_PREFIX}-{random}".format(
+        random=uuid4(),
+        **os.environ,
+    )
+)

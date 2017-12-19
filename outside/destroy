@@ -1,0 +1,3 @@
+#!/usr/bin/env sh
+# Destroy all containers, volumes, local images and networks
+docker-compose down -v --rmi local --remove-orphans

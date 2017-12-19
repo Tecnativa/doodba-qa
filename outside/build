@@ -1,0 +1,13 @@
+#!/usr/bin/env sh
+set -e
+
+# Remove possibly preexisting stuff
+docker-compose down -v --remove-orphans
+
+# Build and pull images
+docker-compose build --pull
+docker-compose pull
+
+# Check odoo bin works
+# HACK https://github.com/docker/compose/issues/4688
+docker-compose run --name "$(container-name)" --rm odoo --version

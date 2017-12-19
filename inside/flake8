@@ -1,0 +1,23 @@
+#!/usr/bin/env bash
+set -e
+
+# Check addons exist
+addons list -fs ' ' $ADDON_CATEGORIES
+addons="$(addons list -fs ' ' $ADDON_CATEGORIES)" || true
+if [ -z "$addons" ]; then
+    log INFO No addons found
+    exit 0
+fi
+
+# Dependencies
+cd "$(mktemp -d)"
+git clone -q --depth 1 https://github.com/OCA/maintainer-quality-tools.git .
+pip install -q --user flake8
+export PATH="$PATH:$(pwd)/travis"
+
+# Put all addons to lint into same parent folder
+cd "$(mktemp -d)"
+ln -s $addons .
+
+# Lint
+test_flake8

@@ -1,0 +1,22 @@
+#!/usr/bin/env bash
+set -e
+
+# Configure MQT
+export VERSION="$ODOO_VERSION"
+export INCLUDE_LINT="$(addons list -fs ' ' $ADDON_CATEGORIES)" || true
+
+# Check addons exist
+if [ -z "$INCLUDE_LINT" ]; then
+    log INFO No addons found
+    exit 0
+fi
+
+# Dependencies
+cd "$(mktemp -d)"
+git clone -q --depth 1 https://github.com/OCA/maintainer-quality-tools.git .
+pip install -q --user click pylint-odoo
+npm install --loglevel error eslint
+export PATH="$(pwd)/travis:$PATH"
+
+# Lint
+test_pylint

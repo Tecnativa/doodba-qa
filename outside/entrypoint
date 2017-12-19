@@ -1,0 +1,59 @@
+#!/usr/bin/env python3
+"""
+Perform QA according to user request.
+"""
+import argparse
+import sys
+
+import subprocess
+
+LINTERS = {"flake8", "pylint"}
+INSIDE = {"coverage"} | LINTERS
+
+# Read arguments
+parser = argparse.ArgumentParser(
+    "doodba-qa",
+    description="QA tools for Doodba projects",
+)
+parser.add_argument("script", nargs="+")
+args = parser.parse_args()
+
+if args.script[0] in INSIDE:
+    if len(args.script) != 1:
+        raise Exception("Script {} does not accept arguments".format(
+            args.script[0]))
+    cmd = [
+        "docker-compose", "run", "--rm",
+        "-e", "LOG_LEVEL=WARNING",
+        "-e", "ADDON_CATEGORIES",
+        # Avoid possible routing problems in Traefik
+        "--label", "traefik.enable=false",
+    ]
+    # Linters don't need other containers
+    if args.script[0] in LINTERS:
+        cmd += ["--no-deps", "-e", "WAIT_DB=false"]
+    # Get source code to be executed
+    with open("/usr/local/src/{}".format(args.script[0]), "rb") as source:
+        shebang = source.readline()
+        if not shebang.startswith(b"#!"):
+            raise Exception("Scripts need a shebang")
+        # TODO Find a better way to execute code interpreting its shebang
+        shebang = shebang.replace(b"#!", b"", 1).split()
+        code = source.read()
+    cmd += ["odoo"] + shebang + ["-c", code]
+else:
+    cmd = args.script
+
+# Run subcommand and exit with its code
+process = subprocess.Popen(cmd)
+try:
+    process.wait()
+except KeyboardInterrupt:
+    print("Terminating...")
+    try:
+        process.terminate()
+    except KeyboardInterrupt:
+        print("Killing...")
+        process.kill()
+finally:
+    sys.exit(process.returncode)

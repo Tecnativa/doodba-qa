@@ -1,0 +1,24 @@
+#!/usr/bin/env bash
+set -ex
+
+# Check addons exist
+addons="$(addons list $ADDON_CATEGORIES)" || true
+if [ -z "$addons" ]; then
+    log INFO No addons found
+    exit 0
+fi
+
+# Create DB if needed
+[ "$ODOO_VERSION" != 8.0 ] || psql postgres -c "CREATE DATABASE $PGDATABASE"
+
+# Install all required addons
+addons init $ADDON_CATEGORIES
+
+# Test them and report coverage
+pip install -q --user coverage
+odoo="$(realpath "$(which odoo)")"
+coverage run \
+    --source "$(addons list -f $ADDON_CATEGORIES)" \
+    --omit '*/__openerp__.py,*/__manifest__.py' \
+    "$odoo" --stop-after-init --test-enable -u "$addons"
+coverage report --skip-covered
