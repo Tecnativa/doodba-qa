@@ -22,10 +22,13 @@ if args.script[0] in INSIDE:
     if len(args.script) != 1:
         raise Exception("Script {} does not accept arguments".format(
             args.script[0]))
+    container_name = subprocess.check_output(["container-name"])
     cmd = [
         "docker-compose", "run", "--rm",
         "-e", "LOG_LEVEL=WARNING",
         "-e", "ADDON_CATEGORIES",
+        # HACK https://github.com/docker/compose/issues/4688
+        "--name", container_name.decode().strip(),
         # Avoid possible routing problems in Traefik
         "--label", "traefik.enable=false",
     ]
