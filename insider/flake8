@@ -1,10 +1,9 @@
 #!/usr/bin/env bash
-set -e
+set -ex
 
 # Check addons exist
 addons="$(addons list -fs ' ' $ADDON_CATEGORIES)" || failed=1
 if [ "$failed" == "1" ]; then
-    log INFO No addons found
     exit 0
 fi
 

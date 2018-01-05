@@ -5,6 +5,7 @@ ENV COMPOSE_FILE=test.yaml \
     COMPOSE_PROJECT_NAME=project \
     ADDON_CATEGORIES="--private --extra" \
     CONTAINER_PREFIX="ci" \
+    VERBOSE=0 \
     SHARED_NETWORK=inverseproxy_shared
 # Scripts that run inside your Doodba's Odoo container
 COPY insider /usr/local/src
