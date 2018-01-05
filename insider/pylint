@@ -3,10 +3,10 @@ set -e
 
 # Configure MQT
 export VERSION="$ODOO_VERSION"
-export INCLUDE_LINT="$(addons list -fs ' ' $ADDON_CATEGORIES)" || true
+export INCLUDE_LINT="$(addons list -fs ' ' $ADDON_CATEGORIES)" || failed=1
 
 # Check addons exist
-if [ -z "$INCLUDE_LINT" ]; then
+if [ "$failed" == "1" ]; then
     log INFO No addons found
     exit 0
 fi
