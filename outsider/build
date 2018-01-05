@@ -1,5 +1,6 @@
 #!/usr/bin/env sh
 set -e
+[ "$VERBOSE" -lt 1 ] || set -x
 
 # Remove possibly preexisting stuff
 docker-compose down -v --remove-orphans
