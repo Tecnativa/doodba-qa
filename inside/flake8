@@ -2,7 +2,6 @@
 set -e
 
 # Check addons exist
-addons list -fs ' ' $ADDON_CATEGORIES
 addons="$(addons list -fs ' ' $ADDON_CATEGORIES)" || true
 if [ -z "$addons" ]; then
     log INFO No addons found
