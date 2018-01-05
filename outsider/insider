@@ -27,6 +27,7 @@ cmd = [
     "docker-compose", "run", "--rm",
     "-e", "LOG_LEVEL=WARNING",
     "-e", "ADDON_CATEGORIES",
+    "-e", "VERBOSE",
     # HACK https://github.com/docker/compose/issues/4688
     "--name", container_name.decode().strip(),
     # Avoid possible routing problems in Traefik

@@ -1,5 +1,6 @@
 #!/usr/bin/env bash
-set -ex
+set -e
+[ "$VERBOSE" -lt 1 ] || set -x
 
 # Configure MQT
 export VERSION="$ODOO_VERSION"
