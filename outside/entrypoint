@@ -3,6 +3,7 @@
 Perform QA according to user request.
 """
 import argparse
+import os
 import sys
 
 import subprocess
@@ -11,17 +12,15 @@ LINTERS = {"flake8", "pylint"}
 INSIDE = {"coverage"} | LINTERS
 
 # Read arguments
-parser = argparse.ArgumentParser(
-    "doodba-qa",
-    description="QA tools for Doodba projects",
-)
-parser.add_argument("script", nargs="+")
-args = parser.parse_args()
+try:
+    script = sys.argv[1]
+except IndexError:
+    sys.exit("You must supply a script to be executed")
 
-if args.script[0] in INSIDE:
-    if len(args.script) != 1:
+if script in INSIDE:
+    if sys.argv[2:]:
         raise Exception("Script {} does not accept arguments".format(
-            args.script[0]))
+            script))
     container_name = subprocess.check_output(["container-name"])
     cmd = [
         "docker-compose", "run", "--rm",
@@ -33,10 +32,10 @@ if args.script[0] in INSIDE:
         "--label", "traefik.enable=false",
     ]
     # Linters don't need other containers
-    if args.script[0] in LINTERS:
+    if script in LINTERS:
         cmd += ["--no-deps", "-e", "WAIT_DB=false"]
     # Get source code to be executed
-    with open("/usr/local/src/{}".format(args.script[0]), "rb") as source:
+    with open("/usr/local/src/{}".format(script), "rb") as source:
         shebang = source.readline()
         if not shebang.startswith(b"#!"):
             raise Exception("Scripts need a shebang")
@@ -45,18 +44,8 @@ if args.script[0] in INSIDE:
         code = source.read()
     cmd += ["odoo"] + shebang + ["-c", code]
 else:
-    cmd = args.script
+    # Outside scripts need nothing special
+    cmd = sys.argv[1:]
 
-# Run subcommand and exit with its code
-process = subprocess.Popen(cmd)
-try:
-    process.wait()
-except KeyboardInterrupt:
-    print("Terminating...")
-    try:
-        process.terminate()
-    except KeyboardInterrupt:
-        print("Killing...")
-        process.kill()
-finally:
-    sys.exit(process.returncode)
+# Exec the desired command replacing entrypoint's PID
+os.execvp(cmd[0], cmd)
