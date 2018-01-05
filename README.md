@@ -63,7 +63,7 @@ Lint code with [flake8](https://pypi.python.org/pypi/flake8) using [MQT][].
 
 ### `pylint`
 
-Lint code with pylint-odoo using [MQT][].
+Lint code with [pylint-odoo](https://github.com/OCA/pylint-odoo/) using [MQT][].
 
 [Doodba]: https://github.com/Tecnativa/docker-odoo-base
 [MQT]: https://github.com/OCA/maintainer-quality-tools
