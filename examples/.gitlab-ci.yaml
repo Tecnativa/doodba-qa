@@ -13,10 +13,14 @@ Pull and build images on private addons:
 
 # Lint
 Pylint:
+  variables:
+    ADDON_CATEGORIES: "--private"
   script:
     - pylint
 
 Flake8:
+  variables:
+    ADDON_CATEGORIES: "--private"
   script:
     - flake8
 
