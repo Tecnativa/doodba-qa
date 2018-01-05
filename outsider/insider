@@ -1,0 +1,56 @@
+#!/usr/bin/env python3
+"""
+Run any insider script.
+
+This file needs to be symlinked for each of the available insider scripts to
+serve as an entrypoint only for them.
+"""
+import argparse
+import os
+import subprocess
+import sys
+
+import docker
+
+LINTERS = {"flake8", "pylint"}
+
+# Check this file is being executed correctly
+script = os.path.basename(sys.argv[0])
+full_script = "/usr/local/src/{}".format(script)
+if not os.path.exists(full_script):
+    sys.exit("Called in a wrong way! {} should exist".format(full_script))
+
+if sys.argv[1:]:
+    sys.exit("Script {} does not accept arguments".format(script))
+container_name = subprocess.check_output(["container-name"])
+cmd = [
+    "docker-compose", "run", "--rm",
+    "-e", "LOG_LEVEL=WARNING",
+    "-e", "ADDON_CATEGORIES",
+    # HACK https://github.com/docker/compose/issues/4688
+    "--name", container_name.decode().strip(),
+    # Avoid possible routing problems in Traefik
+    "--label", "traefik.enable=false",
+]
+# Linters don't need other containers
+if script in LINTERS:
+    cmd += ["--no-deps", "-e", "WAIT_DB=false"]
+# Get source code to be executed
+with open(full_script, "rb") as source:
+    shebang = source.readline()
+    if not shebang.startswith(b"#!"):
+        raise Exception("Scripts need a shebang")
+    # TODO Find a better way to execute code interpreting its shebang
+    shebang = shebang.replace(b"#!", b"", 1).split()
+    code = source.read()
+cmd += ["odoo"] + shebang + ["-c", code]
+
+# Create the desired network if missing
+client = docker.from_env()
+try:
+    client.networks.get(os.environ["SHARED_NETWORK"])
+except docker.errors.NotFound:
+    client.networks.create(os.environ["SHARED_NETWORK"])
+
+# Exec the desired command replacing own PID
+os.execvp(cmd[0], cmd)
