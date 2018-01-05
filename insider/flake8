@@ -3,8 +3,8 @@ set -e
 [ "$VERBOSE" -lt 1 ] || set -x
 
 # Check addons exist
-addons="$(addons list -fs ' ' $ADDON_CATEGORIES)" || failed=1
-if [ "$failed" == "1" ]; then
+addons="$(addons list -fs ' ' $ADDON_CATEGORIES)" || true
+if [ -z "$addons" ]; then
     exit 0
 fi
 
