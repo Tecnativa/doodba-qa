@@ -1,0 +1,50 @@
+image: tecnativa/doodba-qa
+
+variables:
+  COMPOSE_FILE: test.yaml
+  COMPOSE_PROJECT_NAME: $CI_PROJECT_PATH_SLUG-$CI_COMMIT_REF_SLUG
+  REVIEW_DOMAIN: ci.example.com
+
+# Build
+Pull and build images on private addons:
+  stage: build
+  script:
+    - build
+
+# Lint
+Pylint:
+  script:
+    - pylint
+
+Flake8:
+  script:
+    - flake8
+
+# Automated tests
+Install and test private addons:
+  script:
+    - coverage
+  coverage: /TOTAL.* (\d+)%/
+
+# Runbot
+Boot runbot:
+  stage: deploy
+  variables:
+    DOMAIN_TEST: $CI_ENVIRONMENT_SLUG.$REVIEW_DOMAIN
+  environment:
+    name: review $CI_COMMIT_REF_NAME
+    # TODO Reuse $DOMAIN_TEST instead
+    # HACK https://gitlab.com/gitlab-org/gitlab-runner/issues/2487
+    url: https://$CI_ENVIRONMENT_SLUG.$REVIEW_DOMAIN
+    on_stop: Destroy runbot
+  script:
+    - docker-compose up -d
+
+Destroy runbot:
+  stage: deploy
+  when: manual
+  environment:
+    name: review $CI_COMMIT_REF_NAME
+    action: stop
+  script:
+    - destroy

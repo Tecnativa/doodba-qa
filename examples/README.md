@@ -1,3 +1,0 @@
-# Doodba QA examples
-
-TODO.

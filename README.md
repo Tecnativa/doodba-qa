@@ -17,6 +17,10 @@ We needed a too Doodba-focused version instead. 😆
 1. Configure through [environment variables](#environment-variables).
 1. Run any of the bundled [scripts](#scripts).
 
+Example command:
+
+    docker container run --rm --privileged -v $(pwd):/project:z -v /var/run/docker.sock tecnativa/doodba-qa pylint
+
 You most likely want to run this into a CI environment, so just check out the `examples` directory and you'll get a hint on how to do it.
 
 ## Environment variables
