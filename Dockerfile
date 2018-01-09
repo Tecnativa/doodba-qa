@@ -1,7 +1,7 @@
 FROM docker
 RUN apk add --no-cache python3
 RUN pip3 install docker-compose
-ENV COMPOSE_FILE=test.yaml \
+ENV COMPOSE_FILE="docker-compose.yml:docker-compose.yaml:test.yaml" \
     COMPOSE_PROJECT_NAME=project \
     ADDON_CATEGORIES="--private --extra" \
     CONTAINER_PREFIX="ci" \
