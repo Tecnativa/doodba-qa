@@ -3,20 +3,16 @@ set -e
 [ "$VERBOSE" -lt 1 ] || set -x
 
 # Check addons exist
-addons="$(addons list -fs ' ' $ADDON_CATEGORIES)" || true
-if [ -z "$addons" ]; then
-    exit 0
-fi
+INCLUDE_LINT="$(addons list -fs ' ' $ADDON_CATEGORIES)" || exit 0
+export INCLUDE_LINT
 
 # Dependencies
 cd "$(mktemp -d)"
-git clone -q --depth 1 https://github.com/OCA/maintainer-quality-tools.git .
+git clone -q --depth 100 https://github.com/OCA/maintainer-quality-tools.git .
+# HACK https://github.com/OCA/maintainer-quality-tools/pull/520
+git pull -q origin pull/520/head
 pip install -q --user flake8
 export PATH="$PATH:$(pwd)/travis"
-
-# Put all addons to lint into same parent folder
-cd "$(mktemp -d)"
-ln -s $addons .
 
 # Lint
 test_flake8
