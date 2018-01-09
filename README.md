@@ -17,9 +17,13 @@ We needed a too Doodba-focused version instead. 😆
 1. Configure through [environment variables](#environment-variables).
 1. Run any of the bundled [scripts](#scripts).
 
-Example command:
+Example command for test environment, good for CI:
 
-    docker container run --rm -it --privileged -v "$PWD:/project:z" -v /var/run/docker.sock:/var/run/docker.sock:z -e COMPOSE_PROJECT_NAME=$(basename "$PWD") tecnativa/doodba-qa pylint
+    docker container run --rm -it --privileged -e COMPOSE_FILE=test.yaml -v "$PWD:/project:z" -v /var/run/docker.sock:/var/run/docker.sock:z tecnativa/doodba-qa pylint
+
+Example command for devel environment:
+
+    docker container run --rm -it --privileged -v "$PWD:$PWD:z" -v /var/run/docker.sock:/var/run/docker.sock:z -w "$PWD" tecnativa/doodba-qa pylint
 
 You most likely want to run this into a CI environment, so just check out the `examples` directory and you'll get a hint on how to do it.
 

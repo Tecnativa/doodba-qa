@@ -8,9 +8,9 @@ Ensure unique and descriptive container names
 import os
 from uuid import uuid4
 
-print(
-    "{COMPOSE_PROJECT_NAME}-{CONTAINER_PREFIX}-{random}".format(
-        random=uuid4(),
-        **os.environ,
-    )
-)
+project = os.environ.get(
+    "COMPOSE_PROJECT_NAME",
+    os.path.basename(os.getcwd()))
+prefix = os.environ["CONTAINER_PREFIX"]
+
+print("{}-{}-{}".format(project, prefix, uuid4()))

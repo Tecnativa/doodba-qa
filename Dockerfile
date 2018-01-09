@@ -2,7 +2,6 @@ FROM docker
 RUN apk add --no-cache python3
 RUN pip3 install docker-compose
 ENV ADDON_CATEGORIES="--private --extra" \
-    COMPOSE_PROJECT_NAME=project \
     CONTAINER_PREFIX="ci" \
     SHARED_NETWORK=inverseproxy_shared \
     VERBOSE=0
