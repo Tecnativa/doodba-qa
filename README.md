@@ -19,7 +19,7 @@ We needed a too Doodba-focused version instead. 😆
 
 Example command:
 
-    docker container run --rm --privileged -v $(pwd):/project:z -v /var/run/docker.sock tecnativa/doodba-qa pylint
+    docker container run --rm --privileged -v $(pwd):/project:z -v /var/run/docker.sock:/var/run/docker.sock:z tecnativa/doodba-qa pylint
 
 You most likely want to run this into a CI environment, so just check out the `examples` directory and you'll get a hint on how to do it.
 
