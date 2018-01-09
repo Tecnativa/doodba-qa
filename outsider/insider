@@ -35,7 +35,7 @@ cmd = [
 ]
 # Linters don't need other containers
 if script in LINTERS:
-    cmd += ["--no-deps", "-e", "WAIT_DB=false"]
+    cmd += ["--no-deps", "-e", "WAIT_DB=false", "-e", "UNACCENT=false"]
 # Get source code to be executed
 with open(full_script, "rb") as source:
     shebang = source.readline()
