@@ -13,3 +13,5 @@ WORKDIR /usr/local/bin
 COPY outsider .
 RUN for f in $(ls /usr/local/src); do ln -s insider $f; done; sync
 WORKDIR /project
+# Remove problematic parent image entrypoint
+ENTRYPOINT []
