@@ -21,9 +21,9 @@ Example command for test environment, good for CI:
 
     docker container run --rm -it --privileged -e COMPOSE_FILE=test.yaml -v "$PWD:/project:z" -v /var/run/docker.sock:/var/run/docker.sock:z tecnativa/doodba-qa pylint
 
-Example command for devel environment:
+Example command for devel environment, linting only private addons:
 
-    docker container run --rm -it --privileged -v "$PWD:$PWD:z" -v /var/run/docker.sock:/var/run/docker.sock:z -w "$PWD" tecnativa/doodba-qa pylint
+    docker container run --rm -it --privileged -v "$PWD:$PWD:z" -v /var/run/docker.sock:/var/run/docker.sock:z -w "$PWD" -e ADDON_CATEGORIES=-p tecnativa/doodba-qa pylint
 
 You most likely want to run this into a CI environment, so just check out the `examples` directory and you'll get a hint on how to do it.
 
