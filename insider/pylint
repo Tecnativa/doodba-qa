@@ -3,17 +3,12 @@ set -e
 [ "$VERBOSE" -lt 1 ] || set -x
 
 # Configure pylint
-addons="$(addons list -fs ' ' $ADDON_CATEGORIES)" || true
+addons="$(addons list -fs ' ' $ADDON_CATEGORIES)" || exit 0
 if [ -n "$LINT_ENABLE" ]; then
     enable="--enable $LINT_ENABLE"
 fi
 if [ -n "$LINT_DISABLE" ]; then
     disable="--disable $LINT_DISABLE"
-fi
-
-# Check addons exist
-if [ -z "$addons" ]; then
-    exit 0
 fi
 
 # Dependencies
