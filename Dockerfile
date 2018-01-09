@@ -1,12 +1,11 @@
 FROM docker
 RUN apk add --no-cache python3
 RUN pip3 install docker-compose
-ENV COMPOSE_FILE="docker-compose.yml:docker-compose.yaml:test.yaml" \
+ENV ADDON_CATEGORIES="--private --extra" \
     COMPOSE_PROJECT_NAME=project \
-    ADDON_CATEGORIES="--private --extra" \
     CONTAINER_PREFIX="ci" \
-    VERBOSE=0 \
-    SHARED_NETWORK=inverseproxy_shared
+    SHARED_NETWORK=inverseproxy_shared \
+    VERBOSE=0
 # Scripts that run inside your Doodba's Odoo container
 COPY insider /usr/local/src
 # Scripts that run in this container
