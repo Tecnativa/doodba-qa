@@ -2,21 +2,36 @@
 set -e
 [ "$VERBOSE" -lt 1 ] || set -x
 
-# Configure MQT
-export VERSION="$ODOO_VERSION"
-export INCLUDE_LINT="$(addons list -fs ' ' $ADDON_CATEGORIES)" || true
+# Configure pylint
+addons="$(addons list -fs ' ' $ADDON_CATEGORIES)" || true
+if [ -n "$LINT_ENABLE" ]; then
+    enable="--enable $LINT_ENABLE"
+fi
+if [ -n "$LINT_DISABLE" ]; then
+    disable="--disable $LINT_DISABLE"
+fi
 
 # Check addons exist
-if [ -z "$INCLUDE_LINT" ]; then
+if [ -z "$addons" ]; then
     exit 0
 fi
 
 # Dependencies
 cd "$(mktemp -d)"
-git clone -q --depth 1 https://github.com/OCA/maintainer-quality-tools.git .
+git clone -q --depth 100 https://github.com/OCA/maintainer-quality-tools.git .
+# HACK https://github.com/OCA/maintainer-quality-tools/pull/519
+git pull -q origin pull/519/head
 pip install -q --user click pylint-odoo
 npm install --loglevel error eslint
-export PATH="$(pwd)/travis:$PATH"
 
 # Lint
-test_pylint
+# TODO Use MQT's `test_pylint` directly when it becomes more reusable
+code=0
+for addon in $addons; do
+    pylint --load-plugins pylint_odoo \
+        --rcfile ./travis/cfg/$PYLINT_CONFIG_FILE \
+        --valid_odoo_versions=$ODOO_VERSION \
+        $enable $disable $addon || code=$?
+done
+
+exit $code

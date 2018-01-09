@@ -43,6 +43,30 @@ These flags are used for [the `addons` script](https://github.com/Tecnativa/dock
 
     docker-compose run --rm odoo addons --help
 
+### `LINT_DISABLE`
+
+Disables specific linter messages. Its format depends on the underlying linter.
+
+Defaults to `manifest-required-author`, since it's expected that you will only want to lint private addons, and those are not OCA's.
+
+TODO: Make it work with flake8.
+
+### `LINT_ENABLE`
+
+Enables specific linter messages. Its format depends on the underlying linter.
+
+Empty by default.
+
+TODO: Make it work with flake8.
+
+### `LINT_MODE`
+
+Right now, only useful for [`pylint`](#pylint). Valid values:
+
+- `loose` (default) uses [MQT][] standard cfg.
+- `strict` uses pull request cfg.
+- `beta` uses beta cfg.
+
 ### `SHARED_NETWORK`
 
 An external network that should always exist before running containers. It is created automatically if missing. Defaults to `inverseproxy_shared`.
@@ -72,6 +96,8 @@ Lint code with [flake8](https://pypi.python.org/pypi/flake8) using [MQT][].
 ### `pylint`
 
 Lint code with [pylint-odoo](https://github.com/OCA/pylint-odoo/) using [MQT][].
+
+Some [environment variables](#environment-variables) modify this script's behavior; check them out.
 
 [Doodba]: https://github.com/Tecnativa/docker-odoo-base
 [MQT]: https://github.com/OCA/maintainer-quality-tools

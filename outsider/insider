@@ -33,9 +33,23 @@ cmd = [
     # Avoid possible routing problems in Traefik
     "--label", "traefik.enable=false",
 ]
-# Linters don't need other containers
 if script in LINTERS:
-    cmd += ["--no-deps", "-e", "WAIT_DB=false", "-e", "UNACCENT=false"]
+    modes = {
+        "loose": "travis_run_pylint.cfg",
+        "strict": "travis_run_pylint_pr.cfg",
+        "beta": "travis_run_pylint_beta.cfg",
+    }
+    cmd += [
+        # Linters don't need other containers
+        "--no-deps",
+        "-e", "WAIT_DB=false",
+        "-e", "UNACCENT=false",
+        # Direct linter configuration
+        "-e", "LINT_DISABLE",
+        "-e", "LINT_ENABLE",
+        # Choose pylint configuration file to use
+        "-e", "PYLINT_CONFIG_FILE={}".format(modes[os.environ["LINT_MODE"]]),
+    ]
 # Get source code to be executed
 with open(full_script, "rb") as source:
     shebang = source.readline()

@@ -12,11 +12,35 @@ Pull and build images on private addons:
     - build
 
 # Lint
-Pylint:
+Pylint loose:
   variables:
     ADDON_CATEGORIES: "--private"
-  script:
+    LINT_MODE: "master"
+  script: &pylint
     - pylint
+  only: &main_branches
+    - ^\d+\.\d+$
+
+Pylint strict: &pylint_strict
+  variables:
+    ADDON_CATEGORIES: "--private"
+    LINT_MODE: "pr"
+  script: *pylint
+  except: *main_branches
+
+Pylint strict warnings:
+  <<: *pylint_strict
+  allow_failure: true
+  except: {}
+  only: *main_branches
+
+Pylint beta warnings:
+  allow_failure: true
+  variables:
+    ADDON_CATEGORIES: "--private"
+    LINT_MODE: "beta"
+  script: *pylint
+  except: *main_branches
 
 Flake8:
   variables:
@@ -25,7 +49,7 @@ Flake8:
     - flake8
 
 # Automated tests
-Install and test private addons:
+Install and test addons:
   script:
     - coverage
   coverage: /TOTAL.* (\d+)%/

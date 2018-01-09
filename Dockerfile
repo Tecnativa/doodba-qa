@@ -3,6 +3,9 @@ RUN apk add --no-cache python3
 RUN pip3 install docker-compose
 ENV ADDON_CATEGORIES="--private --extra" \
     CONTAINER_PREFIX="ci" \
+    LINT_DISABLE="manifest-required-author" \
+    LINT_ENABLE="" \
+    LINT_MODE=strict \
     SHARED_NETWORK=inverseproxy_shared \
     VERBOSE=0
 # Scripts that run inside your Doodba's Odoo container
