@@ -11,4 +11,6 @@ docker-compose pull
 
 # Check odoo bin works
 # HACK https://github.com/docker/compose/issues/4688
-docker-compose run --name "$(container-name)" --rm odoo --version
+docker-compose run --name "$(container-name)" --rm --no-deps \
+    -e WAIT_DB=false -e UNACCENT=false \
+    odoo --version
