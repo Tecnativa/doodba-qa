@@ -8,6 +8,7 @@ addons="$(addons list $ADDON_CATEGORIES)" || exit 0
 # Test them and report coverage
 pip install -q --user coverage
 odoo="$(realpath "$(which odoo)")"
+cd
 coverage run \
     --source "$(addons list -f $ADDON_CATEGORIES)" \
     --omit '*/__openerp__.py,*/__manifest__.py' \
