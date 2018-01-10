@@ -79,13 +79,19 @@ You can use `sh`, `docker` and `docker-compose` commands with all of their featu
 
 Besides, there are other scripts bundled, useful to do a CI pipeline:
 
+### `addons-install`
+
+Install requested addons.
+
 ### `build`
 
 Build your project with `docker-compose` and check odoo works.
 
 ### `coverage`
 
-Install all the indicated addons, run their unit tests and report coverage.
+Run addons' unit tests and report coverage.
+
+Usually you should run [`addons-install`](#addons-install) before.
 
 ### `destroy`
 

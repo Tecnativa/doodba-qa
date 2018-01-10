@@ -44,7 +44,9 @@ Flake8:
     - flake8
 
 # Automated tests
-Install and test addons:
+Unit tests:
+  before_script:
+    - addons-install
   script:
     - coverage
   coverage: /TOTAL.* (\d+)%/

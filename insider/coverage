@@ -5,12 +5,6 @@ set -e
 # Check addons exist
 addons="$(addons list $ADDON_CATEGORIES)" || exit 0
 
-# Create DB if needed
-[ "$ODOO_VERSION" != 8.0 ] || psql postgres -c "CREATE DATABASE $PGDATABASE"
-
-# Install all required addons
-addons init $ADDON_CATEGORIES
-
 # Test them and report coverage
 pip install -q --user coverage
 odoo="$(realpath "$(which odoo)")"
