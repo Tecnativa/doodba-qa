@@ -3,14 +3,14 @@ set -e
 [ "$VERBOSE" -lt 1 ] || set -x
 
 # Check addons exist
-addons="$(addons list $ADDON_CATEGORIES)" || exit 0
+addons="$(addons list -i $ADDON_CATEGORIES)" || exit 0
 
 # Test them and report coverage
 pip install -q --user coverage
 odoo="$(realpath "$(which odoo)")"
 cd
 coverage run \
-    --source "$(addons list -f $ADDON_CATEGORIES)" \
+    --source "$(addons list -if $ADDON_CATEGORIES)" \
     --omit '*/__openerp__.py,*/__manifest__.py' \
     "$odoo" --stop-after-init --test-enable -u "$addons"
 coverage report --skip-covered

@@ -3,7 +3,7 @@ set -e
 [ "$VERBOSE" -lt 1 ] || set -x
 
 # Check addons exist
-INCLUDE_LINT="$(addons list -fs ' ' $ADDON_CATEGORIES)" || exit 0
+INCLUDE_LINT="$(addons list -ifs ' ' $ADDON_CATEGORIES)" || exit 0
 export INCLUDE_LINT
 
 # Dependencies
