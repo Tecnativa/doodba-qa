@@ -3,7 +3,7 @@ set -e
 [ "$VERBOSE" -lt 1 ] || set -x
 
 # Check addons exist
-addons="$(addons list $ADDON_CATEGORIES)" || exit 0
+addons="$(addons list -i $ADDON_CATEGORIES)" || exit 0
 
 # Create DB if needed
 [ "$ODOO_VERSION" != 8.0 ] || psql postgres -c "CREATE DATABASE $PGDATABASE"
