@@ -6,7 +6,7 @@ variables:
   REVIEW_DOMAIN: ci.example.com
 
 # Build
-Pull and build images on private addons:
+Pull and build images:
   stage: build
   script:
     - build
@@ -14,7 +14,6 @@ Pull and build images on private addons:
 # Lint
 Pylint loose:
   variables:
-    ADDON_CATEGORIES: "--private"
     LINT_MODE: "master"
   script: &pylint
     - pylint
@@ -23,7 +22,6 @@ Pylint loose:
 
 Pylint strict: &pylint_strict
   variables:
-    ADDON_CATEGORIES: "--private"
     LINT_MODE: "pr"
   script: *pylint
   except: *main_branches
@@ -31,20 +29,17 @@ Pylint strict: &pylint_strict
 Pylint strict warnings:
   <<: *pylint_strict
   allow_failure: true
-  except: {}
+  except: []
   only: *main_branches
 
 Pylint beta warnings:
   allow_failure: true
   variables:
-    ADDON_CATEGORIES: "--private"
     LINT_MODE: "beta"
   script: *pylint
   except: *main_branches
 
 Flake8:
-  variables:
-    ADDON_CATEGORIES: "--private"
   script:
     - flake8
 

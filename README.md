@@ -1,5 +1,7 @@
 # Doodba Quality Assurance
 
+BEWARE!, this project is in **beta stage**. Things are changing quickly.
+
 ## What?
 
 Tools for checking that your [Doodba][]-based project is cool.
@@ -35,9 +37,9 @@ Besides, you have these too:
 
 ### `ADDON_CATEGORIES`
 
-Defaults to `--private --extra` for all jobs.
+Defaults to `--private` for all jobs.
 
-You can change it per job, removing any of those or adding `--core`.
+You can change it per job, using any of `--private --extra --core` (or `-pec`).
 
 These flags are used for [the `addons` script](https://github.com/Tecnativa/docker-odoo-base#addons) available in all Doodba projects. Use this command in your project's folder to understand its usage:
 
