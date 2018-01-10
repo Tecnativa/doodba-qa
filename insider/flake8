@@ -10,6 +10,8 @@ export INCLUDE_LINT
 cd "$(mktemp -d)"
 git clone -q --depth 100 https://github.com/OCA/maintainer-quality-tools.git .
 # HACK https://github.com/OCA/maintainer-quality-tools/pull/520
+git config user.email "info@tecnativa.com"
+git config user.name "Doodba QA"
 git pull -q origin pull/520/head
 pip install -q --user flake8
 export PATH="$PATH:$(pwd)/travis"
