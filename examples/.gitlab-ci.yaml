@@ -44,7 +44,7 @@ Flake8:
     - flake8
 
 # Automated tests
-Unit tests:
+Install and test addons:
   before_script:
     - addons-install
   script:
