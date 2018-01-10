@@ -14,7 +14,7 @@ Pull and build images:
 # Lint
 Pylint loose:
   variables:
-    LINT_MODE: "master"
+    LINT_MODE: "loose"
   script: &pylint
     - pylint
   only: &main_branches
@@ -22,7 +22,7 @@ Pylint loose:
 
 Pylint strict: &pylint_strict
   variables:
-    LINT_MODE: "pr"
+    LINT_MODE: "strict"
   script: *pylint
   except: *main_branches
 
