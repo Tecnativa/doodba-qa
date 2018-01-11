@@ -14,10 +14,10 @@ fi
 # Dependencies
 cd "$(mktemp -d)"
 git clone -q --depth 100 https://github.com/OCA/maintainer-quality-tools.git .
-# HACK https://github.com/OCA/maintainer-quality-tools/pull/519
+# HACK https://github.com/OCA/maintainer-quality-tools/pull/522
 git config user.email "info@tecnativa.com"
 git config user.name "Doodba QA"
-git pull -q origin pull/519/head
+git pull -q origin pull/522/head
 pip install -q --user click pylint-odoo
 npm install --loglevel error eslint
 
