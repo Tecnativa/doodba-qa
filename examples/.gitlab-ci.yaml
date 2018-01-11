@@ -51,7 +51,6 @@ Pylint beta warnings:
   allow_failure: true
   variables:
     LINT_MODE: "beta"
-  except: *main_branches
 
 Flake8:
   script:
