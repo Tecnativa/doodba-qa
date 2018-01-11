@@ -20,6 +20,8 @@ Pull and build images:
 # Install
 Install addons:
   stage: install
+  variables:
+    ADDON_CATEGORIES: "--private --extra"
   script:
     - addons-install
 
@@ -57,6 +59,8 @@ Flake8:
 
 # Automated tests
 Test addons:
+  variables:
+    ADDON_CATEGORIES: "--private --extra"
   script:
     - coverage
   coverage: /TOTAL.* (\d+)%/
