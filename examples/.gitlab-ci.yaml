@@ -5,38 +5,50 @@ variables:
   COMPOSE_PROJECT_NAME: $CI_PROJECT_PATH_SLUG-$CI_COMMIT_REF_SLUG
   REVIEW_DOMAIN: ci.example.com
 
+stages:
+  - build
+  - install
+  - test
+  - deploy
+
 # Build
 Pull and build images:
   stage: build
   script:
     - build
 
+# Install
+Install addons:
+  stage: install
+  script:
+    - addons-install
+
 # Lint
-Pylint loose:
+Pylint loose: &pylint
   variables:
     LINT_MODE: "loose"
-  script: &pylint
+  script:
     - pylint
-  only: &main_branches
-    - ^\d+\.\d+$
 
-Pylint strict: &pylint_strict
+Pylint strict:
+  <<: *pylint
   variables:
     LINT_MODE: "strict"
-  script: *pylint
-  except: *main_branches
+  except: &main_branches
+    - ^\d+\.\d+$
 
 Pylint strict warnings:
-  <<: *pylint_strict
+  <<: *pylint
   allow_failure: true
-  except: []
+  variables:
+    LINT_MODE: "strict"
   only: *main_branches
 
 Pylint beta warnings:
+  <<: *pylint
   allow_failure: true
   variables:
     LINT_MODE: "beta"
-  script: *pylint
   except: *main_branches
 
 Flake8:
@@ -44,9 +56,7 @@ Flake8:
     - flake8
 
 # Automated tests
-Install and test addons:
-  before_script:
-    - addons-install
+Test addons:
   script:
     - coverage
   coverage: /TOTAL.* (\d+)%/
