@@ -1,0 +1,10 @@
+#!/bin/bash
+set -ex
+
+# See http://label-schema.org/rc1/#build-time-labels
+time docker image build \
+    --build-arg VCS_REF="$GIT_SHA1" \
+    --build-arg BUILD_DATE="$(date --rfc-3339 ns)" \
+    --build-arg VERSION="$DOCKER_TAG" \
+    --tag "$IMAGE_NAME" \
+    .

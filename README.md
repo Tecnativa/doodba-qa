@@ -1,5 +1,10 @@
 # Doodba Quality Assurance
 
+[![Docker Pulls](https://img.shields.io/docker/pulls/tecnativa/doodba-qa.svg)](https://hub.docker.com/r/tecnativa/doodba-qa)
+[![Layers](https://images.microbadger.com/badges/image/tecnativa/doodba-qa.svg)](https://microbadger.com/images/tecnativa/doodba-qa)
+[![Commit](https://images.microbadger.com/badges/commit/tecnativa/doodba-qa:latest.svg)](https://microbadger.com/images/tecnativa/doodba-qa:latest)
+[![License](https://images.microbadger.com/badges/license/tecnativa/doodba-qa.svg)](https://microbadger.com/images/tecnativa/doodba-qa)
+
 BEWARE!, this project is in **beta stage**. Things are changing quickly.
 
 ## What?
