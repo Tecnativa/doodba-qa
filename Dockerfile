@@ -2,6 +2,7 @@ FROM docker
 RUN apk add --no-cache python3
 RUN pip3 install docker-compose
 ENV ADDON_CATEGORIES="--private" \
+    BUILD_FLAGS="--pull --no-cache" \
     CONTAINER_PREFIX="ci" \
     LINT_DISABLE="manifest-required-author" \
     LINT_ENABLE="" \

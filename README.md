@@ -50,6 +50,10 @@ These flags are used for [the `addons` script](https://github.com/Tecnativa/dock
 
     docker-compose run --rm odoo addons --help
 
+### `BUILD_FLAGS`
+
+Flags to append to `docker-compose build`. Defaults to `--pull --no-cache`.
+
 ### `LINT_DISABLE`
 
 Disables specific linter messages. Its format depends on the underlying linter.
@@ -91,6 +95,8 @@ Install requested addons.
 ### `build`
 
 Build your project with `docker-compose` and check odoo works.
+
+Uses the [`BUILD_FLAGS`](#build-flags).
 
 ### `coverage`
 
