@@ -12,5 +12,5 @@ cd
 coverage run \
     --source "$(addons list -if $ADDON_CATEGORIES)" \
     --omit '*/__openerp__.py,*/__manifest__.py' \
-    "$odoo" --stop-after-init --test-enable -u "$addons"
+    "$odoo" --stop-after-init --workers 0 --test-enable -u "$addons"
 coverage report --skip-covered
