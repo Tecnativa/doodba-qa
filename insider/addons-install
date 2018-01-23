@@ -6,7 +6,7 @@ set -e
 addons="$(addons list -i $ADDON_CATEGORIES)" || exit 0
 
 # Create DB if needed
-[ "$ODOO_VERSION" != 8.0 ] || psql postgres -c "CREATE DATABASE $PGDATABASE"
+[ "$ODOO_VERSION" != 8.0 ] || createdb
 
 # Install all required addons
 addons init $ADDON_CATEGORIES
