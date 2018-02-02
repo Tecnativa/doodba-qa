@@ -26,7 +26,6 @@ container_name = subprocess.check_output(["container-name"])
 cmd = [
     "docker-compose", "run", "--rm",
     "-e", "ADDON_CATEGORIES",
-    "-e", "LOG_LEVEL=WARNING",
     "-e", "VERBOSE",
     # Mount insider dependencies
     "-v", "{}:/qa".format(os.environ["QA_VOLUME"]),
