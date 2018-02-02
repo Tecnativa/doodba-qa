@@ -1,0 +1,16 @@
+#!/usr/bin/env bash
+set -e
+[ "$VERBOSE" -lt 1 ] || set -x
+
+# Create the missing QA volume
+if [ -z "$QA_VOLUME"]; then
+    export QA_VOLUME="$(docker volume create)"
+fi
+
+# Copy data to the QA volume
+venv_container="$(docker container create -v $QA_VOLUME:/qa debian:9)"
+docker container cp -a /qa $venv_container:/
+docker container rm $venv_container
+
+# Resume execution
+exec "$@"

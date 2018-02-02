@@ -6,11 +6,11 @@ set -e
 INCLUDE_LINT="$(addons list -ifs ' ' $ADDON_CATEGORIES)" || exit 0
 export INCLUDE_LINT
 
-# Dependencies
-cd "$(mktemp -d)"
-git clone -q --depth 1 https://github.com/OCA/maintainer-quality-tools.git .
-pip install -q --user flake8
-export PATH="$PATH:$(pwd)/travis"
+# Activate insider dependencies
+venv="/qa/py$(python -c 'import sys; print(sys.version[0])')"
+source $venv/bin/activate
+cd /qa/mqt
+export PATH="$PATH:/qa/mqt/travis"
 
 # Lint
 test_flake8

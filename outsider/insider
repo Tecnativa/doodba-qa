@@ -28,6 +28,8 @@ cmd = [
     "-e", "ADDON_CATEGORIES",
     "-e", "LOG_LEVEL=WARNING",
     "-e", "VERBOSE",
+    # Mount insider dependencies
+    "-v", "{}:/qa".format(os.environ["QA_VOLUME"]),
     # HACK https://github.com/docker/compose/issues/4688
     "--name", container_name.decode().strip(),
     # Avoid possible routing problems in Traefik

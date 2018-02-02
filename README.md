@@ -78,6 +78,14 @@ Right now, only useful for [`pylint`](#pylint). Valid values:
 - `strict` uses pull request cfg.
 - `beta` uses beta cfg.
 
+### `QA_VOLUME`
+
+To be able to work fully offline, this image bundles all needed dependencies for linters, converage, etc. The problem is that sometimes these dependencies need to be available for the Doodba container itself.
+
+To give that container these dependencies, we create a transitionary volume and mount it in the Doodba container inside the `/qa` path.
+
+If you supply this variable, the same volume will be reused, instead of the default behavior of creating a volatile volume for each call.
+
 ### `SHARED_NETWORK`
 
 An external network that should always exist before running containers. It is created automatically if missing. Defaults to `inverseproxy_shared`.

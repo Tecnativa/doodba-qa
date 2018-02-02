@@ -5,8 +5,11 @@ set -e
 # Check addons exist
 addons="$(addons list -i $ADDON_CATEGORIES)" || exit 0
 
-# Test them and report coverage
-pip install -q --user coverage
+# Activate insider dependencies
+venv="/qa/py$(python -c 'import sys; print(sys.version[0])')"
+source $venv/bin/activate
+
+# Test addons and report coverage
 odoo="$(realpath "$(which odoo)")"
 cd
 coverage run \

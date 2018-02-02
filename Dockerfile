@@ -1,12 +1,34 @@
-FROM docker
-RUN apk add --no-cache python3
-RUN pip3 install docker-compose
+FROM debian:9
+ARG MQT=https://github.com/OCA/maintainer-quality-tools.git
+RUN apt-get -qq update \
+    && apt-get install -yqq --no-install-recommends \
+        curl git gnupg2 virtualenv \
+        python-pip python-setuptools python-virtualenv \
+        python3-pip python3-setuptools python3-virtualenv \
+    && curl -sL https://deb.nodesource.com/setup_6.x | bash - \
+    && apt-get install -yqq nodejs \
+    && curl -fsSL https://get.docker.com | sh \
+    && apt-get -yqq autoremove \
+    && rm -Rf /var/lib/apt/lists/*
+RUN pip3 install --no-cache-dir docker-compose
+# Insider script dependencies
+RUN for v in 2 3; \
+        do virtualenv --system-site-packages -p python$v /qa/py$v \
+        && cd /qa/py$v \
+        && virtualenv --relocatable . \
+        && . ./bin/activate \
+        && pip install --no-cache-dir coverage click flake8 pylint-odoo \
+        && npm install --loglevel error eslint \
+        && deactivate; \
+    done \
+    && git clone --depth 1 $MQT /qa/mqt
 ENV ADDON_CATEGORIES="--private" \
     BUILD_FLAGS="--pull --no-cache" \
     CONTAINER_PREFIX="ci" \
     LINT_DISABLE="manifest-required-author" \
     LINT_ENABLE="" \
     LINT_MODE=strict \
+    QA_VOLUME="" \
     SHARED_NETWORK=inverseproxy_shared \
     VERBOSE=0
 # Scripts that run inside your Doodba's Odoo container
@@ -16,8 +38,7 @@ WORKDIR /usr/local/bin
 COPY outsider .
 RUN for f in $(ls /usr/local/src); do ln -s insider $f; done; sync
 WORKDIR /project
-# Remove problematic parent image entrypoint
-ENTRYPOINT []
+ENTRYPOINT ["/usr/local/bin/entrypoint"]
 
 # Labels
 ARG BUILD_DATE
