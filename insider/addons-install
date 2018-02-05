@@ -3,10 +3,10 @@ set -e
 [ "$VERBOSE" -lt 1 ] || set -x
 
 # Check addons exist
-addons="$(addons list -i $ADDON_CATEGORIES)" || exit 0
+addons="$(addons list -ix $ADDON_CATEGORIES)" || exit 0
 
 # Create DB if needed
 [ "$ODOO_VERSION" != 8.0 ] || createdb
 
 # Install all required addons
-addons init $ADDON_CATEGORIES
+addons init -x $ADDON_CATEGORIES

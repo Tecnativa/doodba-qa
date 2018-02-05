@@ -3,7 +3,7 @@ set -e
 [ "$VERBOSE" -lt 1 ] || set -x
 
 # Check addons exist
-addons="$(addons list -i $ADDON_CATEGORIES)" || exit 0
+addons="$(addons list -ix $ADDON_CATEGORIES)" || exit 0
 
 # Activate insider dependencies
 venv="/qa/py$(python -c 'import sys; print(sys.version[0])')"
@@ -13,7 +13,7 @@ source $venv/bin/activate
 odoo="$(realpath "$(which odoo)")"
 cd
 coverage run \
-    --source "$(addons list -if $ADDON_CATEGORIES)" \
+    --source "$(addons list -ixf $ADDON_CATEGORIES)" \
     --omit '*/__openerp__.py,*/__manifest__.py' \
     "$odoo" --stop-after-init --workers 0 --test-enable -u "$addons"
 coverage report --skip-covered

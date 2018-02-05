@@ -3,7 +3,7 @@ set -e
 [ "$VERBOSE" -lt 1 ] || set -x
 
 # Configure pylint
-addons="$(addons list -ifs ' ' $ADDON_CATEGORIES)" || exit 0
+addons="$(addons list -ifxs ' ' $ADDON_CATEGORIES)" || exit 0
 if [ -n "$LINT_ENABLE" ]; then
     enable="--enable $LINT_ENABLE"
 fi
