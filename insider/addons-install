@@ -3,7 +3,11 @@ set -e
 [ "$VERBOSE" -lt 1 ] || set -x
 
 # Check addons exist
-addons="$(addons list -ix $ADDON_CATEGORIES)" || exit 0
+errorcode=0
+addons="$(addons list -ix $ADDON_CATEGORIES)" || errorcode=$?
+
+# If no addons are found, it's done
+[ "$errorcode" -eq 2 ] && exit 0 || [ "$errorcode" -eq 0 ]
 
 # Create DB if needed
 [ "$ODOO_VERSION" != 8.0 ] || createdb

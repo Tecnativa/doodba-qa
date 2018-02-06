@@ -3,8 +3,11 @@ set -e
 [ "$VERBOSE" -lt 1 ] || set -x
 
 # Check addons exist
-INCLUDE_LINT="$(addons list -ifxs ' ' $ADDON_CATEGORIES)" || exit 0
-export INCLUDE_LINT
+errorcode=0
+addons="$(addons list -ifxs ' ' $ADDON_CATEGORIES)" || errorcode=$?
+
+# If no addons are found, it's done
+[ "$errorcode" -eq 2 ] && exit 0 || [ "$errorcode" -eq 0 ]
 
 # Activate insider dependencies
 venv="/qa/py$(python -c 'import sys; print(sys.version[0])')"
@@ -13,4 +16,5 @@ cd /qa/mqt
 export PATH="$PATH:/qa/mqt/travis"
 
 # Lint
+export INCLUDE_LINT="$addons"
 test_flake8
