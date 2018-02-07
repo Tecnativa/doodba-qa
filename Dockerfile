@@ -25,6 +25,7 @@ RUN for v in 2 3; \
 ENV ADDON_CATEGORIES="--private" \
     BUILD_FLAGS="--pull --no-cache" \
     CONTAINER_PREFIX="ci" \
+    LANG=C.UTF-8 \
     LINT_DISABLE="manifest-required-author" \
     LINT_ENABLE="" \
     LINT_MODE=strict \
