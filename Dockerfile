@@ -3,8 +3,8 @@ ARG MQT=https://github.com/OCA/maintainer-quality-tools.git
 RUN apt-get -qq update \
     && apt-get install -yqq --no-install-recommends \
         curl git gnupg2 virtualenv \
-        python-pip python-setuptools python-virtualenv \
-        python3-pip python3-setuptools python3-virtualenv \
+        python-pip python-setuptools python-lxml python-virtualenv \
+        python3-pip python3-setuptools python3-lxml python3-virtualenv \
     && curl -sL https://deb.nodesource.com/setup_6.x | bash - \
     && apt-get install -yqq nodejs \
     && curl -fsSL https://get.docker.com | sh \
