@@ -1,5 +1,15 @@
 FROM debian:9
 ARG MQT=https://github.com/OCA/maintainer-quality-tools.git
+ENV ADDON_CATEGORIES="--private" \
+    BUILD_FLAGS="--pull --no-cache" \
+    CONTAINER_PREFIX="ci" \
+    LANG=C.UTF-8 \
+    LINT_DISABLE="manifest-required-author" \
+    LINT_ENABLE="" \
+    LINT_MODE=strict \
+    QA_VOLUME="" \
+    SHARED_NETWORK=inverseproxy_shared \
+    VERBOSE=0
 RUN apt-get -qq update \
     && apt-get install -yqq --no-install-recommends \
         curl git gnupg2 virtualenv \
@@ -14,24 +24,13 @@ RUN pip3 install --no-cache-dir docker-compose
 # Insider script dependencies
 RUN for v in 2 3; \
         do virtualenv --system-site-packages -p python$v /qa/py$v \
-        && cd /qa/py$v \
-        && virtualenv --relocatable . \
-        && . ./bin/activate \
+        && virtualenv --relocatable -p python$v /qa/py$v \
+        && . /qa/py$v/bin/activate \
         && pip install --no-cache-dir coverage click flake8 pylint-odoo \
         && npm install --loglevel error eslint \
         && deactivate; \
     done \
     && git clone --depth 1 $MQT /qa/mqt
-ENV ADDON_CATEGORIES="--private" \
-    BUILD_FLAGS="--pull --no-cache" \
-    CONTAINER_PREFIX="ci" \
-    LANG=C.UTF-8 \
-    LINT_DISABLE="manifest-required-author" \
-    LINT_ENABLE="" \
-    LINT_MODE=strict \
-    QA_VOLUME="" \
-    SHARED_NETWORK=inverseproxy_shared \
-    VERBOSE=0
 # Scripts that run inside your Doodba's Odoo container
 COPY insider /usr/local/src
 # Scripts that run in this container
