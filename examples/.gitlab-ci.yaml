@@ -9,6 +9,7 @@ stages:
   - build
   - install
   - test
+  - test_cleanup
   - deploy
 
 # Build
@@ -63,6 +64,13 @@ Test addons:
   script:
     - coverage
   coverage: /TOTAL.* (\d+)%/
+
+# Free resources if something failed
+Cleanup failed test resources:
+  stage: test_cleanup
+  when: on_failure
+  script:
+    - shutdown
 
 # Runbot
 Boot runbot:

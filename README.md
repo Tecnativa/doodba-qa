@@ -126,6 +126,10 @@ Lint code with [pylint-odoo](https://github.com/OCA/pylint-odoo/) using [MQT][].
 
 Some [environment variables](#environment-variables) modify this script's behavior; check them out.
 
+### `shutdown`
+
+Like [`destroy`](#destroy), but keeping volumes and images.
+
 [Doodba]: https://github.com/Tecnativa/docker-odoo-base
 [MQT]: https://github.com/OCA/maintainer-quality-tools
 [scaffolding]: https://github.com/Tecnativa/docker-odoo-base/tree/scaffolding
