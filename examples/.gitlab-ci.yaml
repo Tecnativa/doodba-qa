@@ -63,6 +63,10 @@ Test addons:
     ADDON_CATEGORIES: "--private --extra"
   script:
     - coverage
+    - mv artifacts/coverage .
+  artifacts:
+    paths:
+      - coverage
   coverage: /TOTAL.* (\d+)%/
 
 # Free resources if something failed

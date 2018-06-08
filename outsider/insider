@@ -5,13 +5,18 @@ Run any insider script.
 This file needs to be symlinked for each of the available insider scripts to
 serve as an entrypoint only for them.
 """
-import argparse
+import logging
 import os
+import pprint
 import subprocess
 import sys
+import tarfile
+import tempfile
 
 import docker
 
+logging.root.setLevel(logging.DEBUG if os.environ["VERBOSE"] == "1"
+                      else logging.INFO)
 LINTERS = {"flake8", "pylint"}
 
 # Check this file is being executed correctly
@@ -68,5 +73,33 @@ try:
 except docker.errors.NotFound:
     client.networks.create(os.environ["SHARED_NETWORK"])
 
-# Exec the desired command replacing own PID
-os.execvp(cmd[0], cmd)
+# Execute insider command
+result = subprocess.run(cmd)
+
+# Obtain artifacts from QA volume
+logging.debug("Creating transit container")
+transit = client.containers.create(
+    "debian:9",
+    volumes={
+        os.environ["QA_VOLUME"]: {"bind": "/qa", "mode": "rw"},
+    },
+)
+logging.debug("Loading produced artifacts, if any")
+tar_stream, stat = transit.get_archive("/qa/artifacts")
+with tempfile.TemporaryFile() as tmp:
+    for chunk in tar_stream:
+        tmp.write(chunk)
+    tmp.seek(0)
+    # Extract artifacts into current container's expected path
+    with tarfile.open(fileobj=tmp) as tar:
+        tar.extractall()
+
+# List artifacts, in a special block to avoid walking dir if not needed
+if os.environ["VERBOSE"] == "1":
+    logging.debug(
+        "Extracted artifacts:\n%s",
+        pprint.pformat(list(os.walk("artifacts"))),
+    )
+
+# Same return code as the insider command
+sys.exit(result.returncode)

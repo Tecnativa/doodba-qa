@@ -30,6 +30,9 @@ RUN for v in 2 3; \
         && npm install --loglevel error eslint \
         && deactivate; \
     done \
+    && mkdir -p /qa/artifacts \
+    && chown -R 1000:1000 /qa/artifacts \
+    && chmod a=rwX /qa/artifacts \
     && git clone --depth 1 $MQT /qa/mqt
 # Scripts that run inside your Doodba's Odoo container
 COPY insider /usr/local/src

@@ -1,16 +1,48 @@
-#!/usr/bin/env bash
-set -e
-[ "$VERBOSE" -lt 1 ] || set -x
+#!/usr/bin/env python3
+import os
+import logging
+import subprocess
+import sys
 
-# Create the missing QA volume
-if [ -z "$QA_VOLUME" ]; then
-    export QA_VOLUME="$(docker volume create)"
-fi
+import docker
+import docker.utils
+
+logging.root.setLevel(logging.DEBUG if os.environ["VERBOSE"] == "1"
+                      else logging.INFO)
+client = docker.from_env()
+error = None
+preexisting_vol = False
+
+if not os.environ["QA_VOLUME"]:
+    qa_volume = client.volumes.create()
+else:
+    try:
+        qa_volume = client.volumes.get(os.environ["QA_VOLUME"])
+        preexisting_vol = True
+    except docker.errors.NotFound:
+        qa_volume = client.volumes.create(os.environ["QA_VOLUME"])
 
 # Copy data to the QA volume
-venv_container="$(docker container create -v $QA_VOLUME:/qa debian:9)"
-docker container cp -a /qa $venv_container:/
-docker container rm $venv_container
+if not preexisting_vol:
+    logging.info("Created QA transition volume %s", qa_volume.name)
+    logging.debug("Creating transit container")
+    client.images.pull("debian", "9")
+    transit = client.containers.create(
+        "debian:9",
+        volumes={
+            qa_volume.name: {"bind": "/qa", "mode": "rw"},
+        },
+    )
+    logging.info("Filling QA volume with tools")
+    with docker.utils.tar("/qa") as qa_tar:
+        transit.put_archive("/qa", qa_tar)
+    logging.debug("Removing transit container")
+    transit.remove()
 
-# Resume execution
-exec "$@"
+cmd = sys.argv[1:]
+logging.debug("Run wrapped command: %r", cmd)
+result = subprocess.run(
+    cmd,
+    env=dict(os.environ, QA_VOLUME=qa_volume.name),
+)
+sys.exit(result.returncode)

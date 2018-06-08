@@ -84,7 +84,7 @@ To be able to work fully offline, this image bundles all needed dependencies for
 
 To give that container these dependencies, we create a transitionary volume and mount it in the Doodba container inside the `/qa` path.
 
-If you supply this variable, the same volume will be reused, instead of the default behavior of creating a volatile volume for each call.
+If you supply this variable, the same volume will be reused, instead of the default behavior of creating a volatile volume for each call. The volume must not exist before, because it will only be filled with QA tools the 1st time, when it is created.
 
 ### `SHARED_NETWORK`
 
@@ -111,6 +111,8 @@ Uses the [`BUILD_FLAGS`](#build-flags).
 Run addons' unit tests and report coverage.
 
 Usually you should run [`addons-install`](#addons-install) before.
+
+You will find the HTML report files in `./artifacts/coverage`.
 
 ### `destroy`
 

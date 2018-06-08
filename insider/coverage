@@ -21,3 +21,5 @@ coverage run \
     --omit '*/__openerp__.py,*/__manifest__.py' \
     "$odoo" --stop-after-init --workers 0 --test-enable -u "$addons"
 coverage report --skip-covered
+mkdir -p /qa/artifacts/coverage
+coverage html --directory /qa/artifacts/coverage
