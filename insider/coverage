@@ -1,13 +1,12 @@
 #!/usr/bin/env bash
-set -e
 [ "$VERBOSE" -lt 1 ] || set -x
 
 # Check addons exist
-errorcode=0
-addons="$(addons list -ix $ADDON_CATEGORIES)" || errorcode=$?
+returncode=0
+addons="$(addons list -ix $ADDON_CATEGORIES)" || returncode=$?
 
 # If no addons are found, it's done
-[ "$errorcode" -eq 2 ] && exit 0 || [ "$errorcode" -eq 0 ]
+[ "$returncode" -eq 2 ] && exit 0 || [ "$returncode" -eq 0 ]
 
 # Activate insider dependencies
 venv="/qa/py$(python -c 'import sys; print(sys.version[0])')"
@@ -20,6 +19,8 @@ coverage run \
     --source "$(addons list -ixf $ADDON_CATEGORIES)" \
     --omit '*/__openerp__.py,*/__manifest__.py' \
     "$odoo" --stop-after-init --workers 0 --test-enable -u "$addons"
+returncode=$?
 coverage report --skip-covered
 mkdir -p /qa/artifacts/coverage
 coverage html --skip-covered --directory /qa/artifacts/coverage
+exit $returncode

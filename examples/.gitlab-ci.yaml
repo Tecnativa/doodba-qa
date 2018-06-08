@@ -67,6 +67,7 @@ Test addons:
   artifacts:
     paths:
       - coverage
+    when: always
   coverage: /TOTAL.* (\d+)%/
 
 # Free resources if something failed
