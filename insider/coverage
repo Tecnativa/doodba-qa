@@ -22,4 +22,4 @@ coverage run \
     "$odoo" --stop-after-init --workers 0 --test-enable -u "$addons"
 coverage report --skip-covered
 mkdir -p /qa/artifacts/coverage
-coverage html --directory /qa/artifacts/coverage
+coverage html --skip-covered --directory /qa/artifacts/coverage
