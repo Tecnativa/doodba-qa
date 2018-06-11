@@ -17,7 +17,7 @@ odoo="$(realpath "$(which odoo)")"
 cd
 coverage run \
     --source "$(addons list -ixf $ADDON_CATEGORIES)" \
-    --omit '*/__openerp__.py,*/__manifest__.py' \
+    --omit '*/__openerp__.py,*/__manifest__.py,/opt/odoo/custom/src/*/*/__init__.py' \
     "$odoo" --stop-after-init --workers 0 --test-enable -u "$addons"
 returncode=$?
 coverage report --skip-covered
