@@ -78,6 +78,7 @@ result = subprocess.run(cmd)
 
 # Obtain artifacts from QA volume
 logging.debug("Creating transit container")
+client.images.pull("debian", "9")
 transit = client.containers.create(
     "debian:9",
     volumes={
