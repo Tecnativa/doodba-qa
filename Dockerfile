@@ -8,6 +8,7 @@ ENV ADDON_CATEGORIES="--private" \
     LINT_ENABLE="" \
     LINT_MODE=strict \
     QA_VOLUME="" \
+    REPOS_FILE="odoo/custom/src/repos.yaml" \
     SHARED_NETWORK=inverseproxy_shared \
     VERBOSE=0
 RUN apt-get -qq update \
@@ -20,7 +21,7 @@ RUN apt-get -qq update \
     && curl -fsSL https://get.docker.com | sh \
     && apt-get -yqq autoremove \
     && rm -Rf /var/lib/apt/lists/*
-RUN pip3 install --no-cache-dir docker-compose
+RUN pip3 install --no-cache-dir docker-compose git-aggregator
 # Insider script dependencies
 RUN for v in 2 3; \
         do virtualenv --system-site-packages -p python$v /qa/py$v \

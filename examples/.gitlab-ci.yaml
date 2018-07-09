@@ -18,6 +18,12 @@ Pull and build images:
   script:
     - build
 
+Closed PRs:
+  stage: build
+  allow_failure: true
+  script:
+    - closed-prs
+
 # Install
 Install addons:
   stage: install

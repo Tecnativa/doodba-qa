@@ -86,6 +86,10 @@ To give that container these dependencies, we create a transitionary volume and 
 
 If you supply this variable, the same volume will be reused, instead of the default behavior of creating a volatile volume for each call. The volume must not exist before, because it will only be filled with QA tools the 1st time, when it is created.
 
+### `REPOS_FILE`
+
+Path for the `repos.yaml` file in current scaffolding (*not* inside the container).
+
 ### `SHARED_NETWORK`
 
 An external network that should always exist before running containers. It is created automatically if missing. Defaults to `inverseproxy_shared`.
@@ -105,6 +109,12 @@ Install requested addons.
 Build your project with `docker-compose` and check odoo works.
 
 Uses the [`BUILD_FLAGS`](#build-flags).
+
+### `closed-prs`
+
+Know if your `repos.yaml` definition includes merged or closed pull requests.
+
+Uses the [`REPOS_FILE`](#repos-file) and [`GITHUB_TOKEN`][1] environment variables.
 
 ### `coverage`
 
@@ -132,6 +142,7 @@ Some [environment variables](#environment-variables) modify this script's behavi
 
 Like [`destroy`](#destroy), but keeping volumes and images.
 
+[1]: https://github.com/acsone/git-aggregator#show-closed-github-pull-requests
 [Doodba]: https://github.com/Tecnativa/docker-odoo-base
 [MQT]: https://github.com/OCA/maintainer-quality-tools
 [scaffolding]: https://github.com/Tecnativa/docker-odoo-base/tree/scaffolding
