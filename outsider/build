@@ -6,8 +6,8 @@ set -e
 docker-compose down -v --remove-orphans
 
 # Build and pull images
-docker-compose build $BUILD_FLAGS
 docker-compose pull
+docker-compose build $BUILD_FLAGS
 
 # Check odoo bin works
 # HACK https://github.com/docker/compose/issues/4688
