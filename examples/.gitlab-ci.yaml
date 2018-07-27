@@ -12,6 +12,9 @@ stages:
   - test_cleanup
   - deploy
 
+before_script:
+  - docker login -u "$CI_REGISTRY_USER" -p "$CI_REGISTRY_PASSWORD" "$CI_REGISTRY"
+
 # Build
 Pull and build images:
   stage: build
@@ -105,3 +108,10 @@ Destroy runbot:
     action: stop
   script:
     - destroy
+
+Push docker image:
+  stage: deploy
+  only:
+    - /^\d+\.\d+$/
+  script:
+    - docker-compose push
