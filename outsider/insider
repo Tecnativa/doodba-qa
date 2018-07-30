@@ -15,8 +15,9 @@ import tempfile
 
 import docker
 
-logging.root.setLevel(logging.DEBUG if os.environ["VERBOSE"] == "1"
-                      else logging.INFO)
+_logger = logging.getLogger("doodba-qa")
+_logger.setLevel(logging.DEBUG if os.environ["VERBOSE"] == "1"
+                 else logging.INFO)
 LINTERS = {"flake8", "pylint"}
 
 # Check this file is being executed correctly
@@ -77,7 +78,7 @@ except docker.errors.NotFound:
 result = subprocess.run(cmd)
 
 # Obtain artifacts from QA volume
-logging.debug("Creating transit container")
+_logger.debug("Creating transit container")
 client.images.pull("debian", "9")
 transit = client.containers.create(
     "debian:9",
@@ -85,7 +86,7 @@ transit = client.containers.create(
         os.environ["QA_VOLUME"]: {"bind": "/qa", "mode": "rw"},
     },
 )
-logging.debug("Loading produced artifacts, if any")
+_logger.debug("Loading produced artifacts, if any")
 tar_stream, stat = transit.get_archive("/qa/artifacts")
 with tempfile.TemporaryFile() as tmp:
     for chunk in tar_stream:
@@ -97,7 +98,7 @@ with tempfile.TemporaryFile() as tmp:
 
 # List artifacts, in a special block to avoid walking dir if not needed
 if os.environ["VERBOSE"] == "1":
-    logging.debug(
+    _logger.debug(
         "Extracted artifacts:\n%s",
         pprint.pformat(list(os.walk("artifacts"))),
     )
