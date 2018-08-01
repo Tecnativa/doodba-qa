@@ -22,12 +22,7 @@ LINTERS = {"flake8", "pylint"}
 
 # Check this file is being executed correctly
 script = os.path.basename(sys.argv[0])
-full_script = "/usr/local/src/{}".format(script)
-if not os.path.exists(full_script):
-    sys.exit("Called in a wrong way! {} should exist".format(full_script))
-
-if sys.argv[1:]:
-    sys.exit("Script {} does not accept arguments".format(script))
+full_script = "/qa/insider/{}".format(script)
 container_name = subprocess.check_output(["container-name"])
 cmd = [
     "docker-compose", "run", "--rm",
@@ -57,15 +52,7 @@ if script in LINTERS:
         # Choose pylint configuration file to use
         "-e", "PYLINT_CONFIG_FILE={}".format(modes[os.environ["LINT_MODE"]]),
     ]
-# Get source code to be executed
-with open(full_script, "rb") as source:
-    shebang = source.readline()
-    if not shebang.startswith(b"#!"):
-        raise Exception("Scripts need a shebang")
-    # TODO Find a better way to execute code interpreting its shebang
-    shebang = shebang.replace(b"#!", b"", 1).split()
-    code = source.read()
-cmd += ["odoo"] + shebang + ["-c", code]
+cmd += ["odoo", full_script, *sys.argv[1:]]
 
 # Create the desired network if missing
 client = docker.from_env()

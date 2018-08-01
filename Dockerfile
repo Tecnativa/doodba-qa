@@ -36,11 +36,11 @@ RUN for v in 2 3; \
     && chmod a=rwX /qa/artifacts \
     && git clone --depth 1 $MQT /qa/mqt
 # Scripts that run inside your Doodba's Odoo container
-COPY insider /usr/local/src
+COPY --chown=root:1000 insider /qa/insider
 # Scripts that run in this container
 WORKDIR /usr/local/bin
 COPY outsider .
-RUN for f in $(ls /usr/local/src); do ln -s insider $f; done; sync
+RUN for f in $(ls /qa/insider); do ln -s insider $f; done; sync
 WORKDIR /project
 ENTRYPOINT ["/usr/local/bin/entrypoint"]
 
