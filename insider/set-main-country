@@ -1,0 +1,25 @@
+#!/usr/bin/env bash
+set -e
+[ "$VERBOSE" -lt 1 ] || set -x
+
+# Initialize database, just in case it didn't exist before
+odoo --stop-after-init
+
+# Write country for main company
+odoo shell <<END
+import logging
+import os
+
+_logger = logging.getLogger("doodba-qa")
+_logger.setLevel(logging.DEBUG if os.environ["VERBOSE"] == "1"
+                 else logging.INFO)
+
+lang = os.environ["INITIAL_LANG"]
+country = countries = env['res.country'].search([
+    ('code', 'ilike', lang.split("_")[-1]),
+])
+_logger.info("Setting main company country %s", country.display_name)
+env.ref("main_company").country_id = country
+
+env.cr.commit()
+END

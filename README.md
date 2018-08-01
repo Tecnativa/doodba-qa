@@ -132,6 +132,11 @@ Destroy all containers, volumes, local images and networks.
 
 Lint code with [flake8](https://pypi.python.org/pypi/flake8) using [MQT][].
 
+### `set-main-country`
+
+Set main company's country to the one specified in `$INITIAL_LANG`.
+For instance, if it is `en_US`, it will load `us`.
+
 ### `pylint`
 
 Lint code with [pylint-odoo](https://github.com/OCA/pylint-odoo/) using [MQT][].

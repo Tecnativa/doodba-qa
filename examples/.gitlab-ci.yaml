@@ -33,6 +33,7 @@ Install addons:
   variables:
     ADDON_CATEGORIES: "--private --extra"
   script:
+    - set-main-country
     - addons-install
 
 # Lint
