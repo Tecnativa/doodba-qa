@@ -18,8 +18,8 @@ lang = os.environ["INITIAL_LANG"]
 country = countries = env['res.country'].search([
     ('code', 'ilike', lang.split("_")[-1]),
 ])
-_logger.info("Setting main company country %s", country.display_name)
-env.ref("main_company").country_id = country
+_logger.info("Setting main company country to %s", country.display_name)
+env.ref("base.main_company").country_id = country
 
 env.cr.commit()
 END
