@@ -31,7 +31,7 @@ Closed PRs:
 Install addons:
   stage: install
   variables:
-    ADDON_CATEGORIES: "--private --extra"
+    ADDON_CATEGORIES: "--private --extra --dependencies"
   script:
     - addons-install
 
