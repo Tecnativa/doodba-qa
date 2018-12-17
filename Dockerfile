@@ -27,7 +27,7 @@ RUN for v in 2 3; \
         do virtualenv --system-site-packages -p python$v /qa/py$v \
         && virtualenv --relocatable -p python$v /qa/py$v \
         && . /qa/py$v/bin/activate \
-        && pip install --no-cache-dir coverage click flake8 pylint-odoo \
+        && pip install --no-cache-dir coverage click flake8 pylint-odoo six \
         && npm install --loglevel error eslint \
         && deactivate; \
     done \
