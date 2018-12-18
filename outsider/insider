@@ -23,15 +23,12 @@ LINTERS = {"flake8", "pylint"}
 # Check this file is being executed correctly
 script = os.path.basename(sys.argv[0])
 full_script = "/qa/insider/{}".format(script)
-container_name = subprocess.check_output(["container-name"])
 cmd = [
     "docker-compose", "run", "--rm",
     "-e", "ADDON_CATEGORIES",
     "-e", "VERBOSE",
     # Mount insider dependencies
     "-v", "{}:/qa".format(os.environ["QA_VOLUME"]),
-    # HACK https://github.com/docker/compose/issues/4688
-    "--name", container_name.decode().strip(),
     # Avoid possible routing problems in Traefik
     "--label", "traefik.enable=false",
 ]

@@ -10,7 +10,6 @@ docker-compose pull --ignore-pull-failures
 docker-compose build $BUILD_FLAGS
 
 # Check odoo bin works
-# HACK https://github.com/docker/compose/issues/4688
-docker-compose run --name "$(container-name)" --rm --no-deps \
+docker-compose run --rm --no-deps \
     -e WAIT_DB=false -e UNACCENT=false \
     odoo --version
