@@ -3,7 +3,12 @@ image: tecnativa/doodba-qa
 variables:
   COMPOSE_FILE: test.yaml
   COMPOSE_PROJECT_NAME: $CI_PROJECT_PATH_SLUG-$CI_COMMIT_REF_SLUG
+  DOCKER_DRIVER: overlay2
+  DOCKER_HOST: tcp://docker:2375/
   REVIEW_DOMAIN: ci.example.com
+
+services:
+  - docker:dind
 
 stages:
   - build
