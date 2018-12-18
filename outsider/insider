@@ -10,10 +10,11 @@ import os
 import pprint
 import subprocess
 import sys
-import tarfile
 import tempfile
+import zipfile
 
 import docker
+import yaml
 
 _logger = logging.getLogger("doodba-qa")
 _logger.setLevel(logging.DEBUG if os.environ["VERBOSE"] == "1"
@@ -22,13 +23,13 @@ LINTERS = {"flake8", "pylint"}
 
 # Check this file is being executed correctly
 script = os.path.basename(sys.argv[0])
-full_script = "/qa/insider/{}".format(script)
+full_script = None
+with open("/usr/local/src/insider/{}".format(script), "r") as fd:
+    full_script = fd.read()
 cmd = [
     "docker-compose", "run", "--rm",
     "-e", "ADDON_CATEGORIES",
     "-e", "VERBOSE",
-    # Mount insider dependencies
-    "-v", "{}:/qa".format(os.environ["QA_VOLUME"]),
     # Avoid possible routing problems in Traefik
     "--label", "traefik.enable=false",
 ]
@@ -49,36 +50,29 @@ if script in LINTERS:
         # Choose pylint configuration file to use
         "-e", "PYLINT_CONFIG_FILE={}".format(modes[os.environ["LINT_MODE"]]),
     ]
-cmd += ["odoo", full_script, *sys.argv[1:]]
+cmd += ["odoo", "/qa/insider", full_script, *sys.argv[1:]]
 
-# Create the desired network if missing
+# Create the missing external networks
+compose_contents = subprocess.check_output(["docker-compose", "config"])
+compose_contents = yaml.safe_load(compose_contents)
 client = docker.from_env()
-try:
-    client.networks.get(os.environ["SHARED_NETWORK"])
-except docker.errors.NotFound:
-    client.networks.create(os.environ["SHARED_NETWORK"])
+for network in compose_contents.get("networks", {}).values():
+    if network.get("external"):
+        try:
+            client.networks.get(network["name"])
+        except docker.errors.NotFound:
+            client.networks.create(network["name"])
 
 # Execute insider command
-result = subprocess.run(cmd)
+artifacts_zip = tempfile.NamedTemporaryFile(suffix=".zip", delete=False)
+with artifacts_zip as fd:
+    result = subprocess.run(cmd, stdout=fd)
 
-# Obtain artifacts from QA volume
-_logger.debug("Creating transit container")
-client.images.pull("debian", "9")
-transit = client.containers.create(
-    "debian:9",
-    volumes={
-        os.environ["QA_VOLUME"]: {"bind": "/qa", "mode": "rw"},
-    },
-)
-_logger.debug("Loading produced artifacts, if any")
-tar_stream, stat = transit.get_archive("/qa/artifacts")
-with tempfile.TemporaryFile() as tmp:
-    for chunk in tar_stream:
-        tmp.write(chunk)
-    tmp.seek(0)
-    # Extract artifacts into current container's expected path
-    with tarfile.open(fileobj=tmp) as tar:
-        tar.extractall()
+# Obtain artifacts
+_logger.debug("Uncompressing artifacts")
+with zipfile.ZipFile(artifacts_zip.name) as fd:
+    fd.extractall("artifacts")
+os.unlink(artifacts_zip.name)
 
 # List artifacts, in a special block to avoid walking dir if not needed
 if os.environ["VERBOSE"] == "1":

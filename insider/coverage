@@ -9,8 +9,7 @@ addons="$(addons list -ix $ADDON_CATEGORIES)" || returncode=$?
 [ "$returncode" -eq 2 ] && exit 0 || [ "$returncode" -eq 0 ]
 
 # Activate insider dependencies
-venv="/qa/py$(python -c 'import sys; print(sys.version[0])')"
-source $venv/bin/activate
+source /qa/venv/bin/activate
 
 # Test addons and report coverage
 odoo="$(realpath "$(which odoo)")"
