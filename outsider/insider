@@ -64,15 +64,21 @@ for network in compose_contents.get("networks", {}).values():
             client.networks.create(network["name"])
 
 # Execute insider command
-artifacts_zip = tempfile.NamedTemporaryFile(suffix=".zip", delete=False)
-with artifacts_zip as fd:
-    result = subprocess.run(cmd, stdout=fd)
-
-# Obtain artifacts
-_logger.debug("Uncompressing artifacts")
-with zipfile.ZipFile(artifacts_zip.name) as fd:
-    fd.extractall("artifacts")
-os.unlink(artifacts_zip.name)
+with tempfile.TemporaryFile() as tmp_fd, \
+        os.fdopen(sys.stderr.fileno(), "wb", closefd=False) as stderr_bytes:
+    result = subprocess.run(cmd, stdout=tmp_fd, stderr=stderr_bytes)
+    tmp_fd.flush()
+    tmp_fd.seek(0)
+    # Obtain artifacts or redirect logs
+    if not zipfile.is_zipfile(tmp_fd):
+        tmp_fd.seek(0)
+        stderr_bytes.write(tmp_fd.read())
+        stderr_bytes.flush()
+    else:
+        _logger.debug("Uncompressing artifacts")
+        tmp_fd.seek(0)
+        with zipfile.ZipFile(tmp_fd) as zip_fd:
+            zip_fd.extractall("artifacts")
 
 # List artifacts, in a special block to avoid walking dir if not needed
 if os.environ["VERBOSE"] == "1":

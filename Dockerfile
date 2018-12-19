@@ -2,6 +2,7 @@ FROM python:3.7-stretch
 ARG MQT=https://github.com/OCA/maintainer-quality-tools.git
 ENV ADDON_CATEGORIES="--private" \
     BUILD_FLAGS="--pull --no-cache" \
+    COMPOSE_INTERACTIVE_NO_CLI=1 \
     CONTAINER_PREFIX="ci" \
     LANG=C.UTF-8 \
     LINT_DISABLE="manifest-required-author" \
