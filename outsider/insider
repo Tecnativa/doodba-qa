@@ -13,9 +13,6 @@ import sys
 import tempfile
 import zipfile
 
-import docker
-import yaml
-
 _logger = logging.getLogger("doodba-qa")
 _logger.setLevel(logging.DEBUG if os.environ["VERBOSE"] == "1"
                  else logging.INFO)
@@ -51,17 +48,6 @@ if script in LINTERS:
         "-e", "PYLINT_CONFIG_FILE={}".format(modes[os.environ["LINT_MODE"]]),
     ]
 cmd += ["odoo", "/qa/insider", full_script, *sys.argv[1:]]
-
-# Create the missing external networks
-compose_contents = subprocess.check_output(["docker-compose", "config"])
-compose_contents = yaml.safe_load(compose_contents)
-client = docker.from_env()
-for network in compose_contents.get("networks", {}).values():
-    if network.get("external"):
-        try:
-            client.networks.get(network["name"])
-        except docker.errors.NotFound:
-            client.networks.create(network["name"])
 
 # Execute insider command
 with tempfile.TemporaryFile() as tmp_fd, \
