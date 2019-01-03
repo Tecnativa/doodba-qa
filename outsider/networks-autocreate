@@ -1,0 +1,24 @@
+#!/usr/bin/env python3
+"""Perform preparation needed to run any QA script."""
+import logging
+import os
+import subprocess
+
+import docker
+import yaml
+
+_logger = logging.getLogger("doodba-qa")
+_logger.setLevel(logging.DEBUG if os.environ["VERBOSE"] == "1"
+                 else logging.INFO)
+
+# Create the missing external networks
+compose_contents = subprocess.check_output(["docker-compose", "config"])
+compose_contents = yaml.safe_load(compose_contents)
+client = docker.from_env()
+for network in compose_contents.get("networks", {}).values():
+    if network.get("external"):
+        try:
+            client.networks.get(network["name"])
+        except docker.errors.NotFound:
+            _logger.debug("Creating missing network %s", network["name"])
+            client.networks.create(network["name"])
