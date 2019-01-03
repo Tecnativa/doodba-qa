@@ -20,6 +20,7 @@ stages:
 
 before_script:
   - docker login -u "$CI_REGISTRY_USER" -p "$CI_REGISTRY_PASSWORD" "$CI_REGISTRY"
+  - networks-autocreate
 
 # Build
 Pull and build images:
@@ -32,11 +33,6 @@ Closed PRs:
   allow_failure: true
   script:
     - closed-prs
-
-Create missing external networks:
-  stage: build
-  script:
-    - networks-autocreate
 
 # Install
 Install addons:
