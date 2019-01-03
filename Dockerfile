@@ -17,7 +17,6 @@ COPY insider /usr/local/src/insider
 WORKDIR /usr/local/bin
 COPY outsider .
 RUN for f in $(ls /usr/local/src/insider); do ln -s insider $f; done; sync
-ENTRYPOINT [ "/usr/local/bin/entrypoint" ]
 WORKDIR /project
 
 # Labels

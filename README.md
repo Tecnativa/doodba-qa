@@ -120,6 +120,14 @@ Destroy all containers, volumes, local images and networks.
 
 Lint code with [flake8](https://pypi.python.org/pypi/flake8) using [MQT][].
 
+### `networks-autocreate`
+
+Create missing external networks, which are not autocreated by docker compose because it expects them to be present at the time of booting an environment.
+
+Common examples of such networks are [`inverseproxy_shared`](https://github.com/Tecnativa/doodba#global-inverse-proxy) or [`globalwhitelist_shared`](https://github.com/Tecnativa/doodba#global-whitelist).
+
+It extracts the required networks from the chosen `docker-compose.yaml` file.
+
 ### `pylint`
 
 Lint code with [pylint-odoo](https://github.com/OCA/pylint-odoo/) using [MQT][].

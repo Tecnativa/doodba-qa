@@ -15,7 +15,8 @@ stages:
   - install
   - test
   - test_cleanup
-  - deploy
+  - runbot
+  - push
 
 before_script:
   - docker login -u "$CI_REGISTRY_USER" -p "$CI_REGISTRY_PASSWORD" "$CI_REGISTRY"
@@ -31,6 +32,11 @@ Closed PRs:
   allow_failure: true
   script:
     - closed-prs
+
+Create missing external networks:
+  stage: build
+  script:
+    - networks-autocreate
 
 # Install
 Install addons:
@@ -93,7 +99,7 @@ Cleanup failed test resources:
 
 # Runbot
 Boot runbot:
-  stage: deploy
+  stage: runbot
   variables:
     DOMAIN_TEST: $CI_ENVIRONMENT_SLUG.$REVIEW_DOMAIN
   environment:
@@ -106,7 +112,7 @@ Boot runbot:
     - docker-compose up -d
 
 Destroy runbot:
-  stage: deploy
+  stage: runbot
   when: manual
   environment:
     name: review $CI_COMMIT_REF_NAME
@@ -115,7 +121,7 @@ Destroy runbot:
     - destroy
 
 Push docker image:
-  stage: deploy
+  stage: push
   only:
     - /^\d+\.\d+$/
   script:
