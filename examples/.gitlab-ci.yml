@@ -1,4 +1,4 @@
-image: tecnativa/doodba-qa:no-qa-volume
+image: tecnativa/doodba-qa
 
 variables:
   COMPOSE_FILE: test.yaml
