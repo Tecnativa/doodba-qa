@@ -20,5 +20,5 @@ for network in compose_contents.get("networks", {}).values():
         try:
             client.networks.get(network["name"])
         except docker.errors.NotFound:
-            _logger.debug("Creating missing network %s", network["name"])
+            _logger.info("Creating missing network %s", network["name"])
             client.networks.create(network["name"])
