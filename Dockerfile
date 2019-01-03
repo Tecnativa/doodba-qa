@@ -1,4 +1,4 @@
-FROM python:3.7-stretch
+FROM python:3-alpine
 ARG MQT=https://github.com/OCA/maintainer-quality-tools.git
 ENV ADDON_CATEGORIES="--private" \
     BUILD_FLAGS="--pull --no-cache" \
@@ -10,6 +10,7 @@ ENV ADDON_CATEGORIES="--private" \
     LINT_MODE=strict \
     REPOS_FILE="odoo/custom/src/repos.yaml" \
     VERBOSE=0
+RUN apk add --no-cache docker git
 RUN pip install --no-cache-dir docker-compose git-aggregator
 # Scripts that run inside your Doodba's Odoo container
 COPY insider /usr/local/src/insider

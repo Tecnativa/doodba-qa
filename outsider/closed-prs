@@ -1,4 +1,4 @@
-#!/usr/bin/env bash
+#!/usr/bin/env sh
 [ "$VERBOSE" -lt 1 ] || set -x
 
 # Use Git Aggregator to get closed PRs
