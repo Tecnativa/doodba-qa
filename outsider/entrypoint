@@ -8,6 +8,7 @@ import docker
 import yaml
 
 # Create the missing external networks
+print(os.getcwd())
 compose_contents = subprocess.check_output(["docker-compose", "config"])
 compose_contents = yaml.safe_load(compose_contents)
 client = docker.from_env()
