@@ -21,4 +21,4 @@ for network in compose_contents.get("networks", {}).values():
 
 # Continue with requested command
 if sys.argv[1:]:
-    os.execvp(sys.argv[1], sys.argv[2:])
+    os.execvp(sys.argv[1], sys.argv[1:])
