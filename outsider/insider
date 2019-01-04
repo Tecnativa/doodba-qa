@@ -30,6 +30,10 @@ cmd = [
     # Avoid possible routing problems in Traefik
     "--label", "traefik.enable=false",
 ]
+if os.environ["VERBOSE"] == "1":
+    cmd += [
+        "-e", "LOG_LEVEL=DEBUG",
+    ]
 if script in LINTERS:
     modes = {
         "loose": "travis_run_pylint.cfg",
