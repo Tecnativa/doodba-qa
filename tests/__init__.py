@@ -20,6 +20,10 @@ BASE_ENVIRON = {
 }
 
 
+class TestException(Exception):
+    pass
+
+
 class ScaffoldingCase(unittest.TestCase):
     def setUp(self):
         super().setUp()
@@ -32,7 +36,7 @@ class ScaffoldingCase(unittest.TestCase):
         environment = environment or {}
         params = {
             "command": command,
-            "detach": False,
+            "detach": True,
             "stdout": True,
             "stderr": True,
             "environment": dict(BASE_ENVIRON, **environment),
@@ -56,23 +60,16 @@ class ScaffoldingCase(unittest.TestCase):
             "working_dir": scaffolding,
         }
         params.update(kwargs)
-        try:
-            result = self.client.containers.run(**params)
-        except docker.errors.ContainerError as error:
-            logging.error("The container errored. Its logs:")
-            with os.fdopen(sys.stderr.fileno(), "wb", closefd=False) as stderr:
-                stderr.write(error.container.logs(
-                    logs=True,
-                    stderr=True,
-                    stdout=True,
-                ))
-                stderr.flush()
-            self.addCleanup(error.container.remove)
-            raise
-        logging.info("The container finished its execution. Its logs:")
+        container = self.client.containers.run(**params)
+        self.addCleanup(container.remove)
+        # Stream logs
         with os.fdopen(sys.stderr.fileno(), "wb", closefd=False) as stderr:
-            stderr.write(result)
-            stderr.flush()
+            for part in container.logs(stream=True):
+                stderr.write(part)
+                stderr.flush()
+        result = container.wait()
+        if result["StatusCode"]:
+            raise TestException(result)
         return result
 
     def test_100_build(self):
@@ -84,7 +81,7 @@ class ScaffoldingCase(unittest.TestCase):
     def test_500_flake8(self):
         """Check flake8 tests work fine."""
         self.run_qa("0", "flake8", environment={"ADDON_CATEGORIES": "-e"})
-        with self.assertRaises(docker.errors.ContainerError):
+        with self.assertRaises(TestException):
             self.run_qa("0", "flake8")
 
 
