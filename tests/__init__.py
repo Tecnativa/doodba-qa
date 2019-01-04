@@ -59,6 +59,7 @@ class ScaffoldingCase(unittest.TestCase):
         try:
             result = self.client.containers.run(**params)
         except docker.errors.ContainerError as error:
+            print(error.container.logs())
             logging.error("The container errored. Its logs:")
             with os.fdopen(sys.stderr.fileno(), "wb", closefd=False) as stderr:
                 stderr.write(error.container.logs())
@@ -66,7 +67,6 @@ class ScaffoldingCase(unittest.TestCase):
             self.addCleanup(error.container.remove)
             raise
         logging.info("The container finished its execution. Its logs:")
-        print(result)
         with os.fdopen(sys.stderr.fileno(), "wb", closefd=False) as stderr:
             stderr.write(result)
             stderr.flush()
