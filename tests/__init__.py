@@ -62,7 +62,7 @@ class ScaffoldingCase(unittest.TestCase):
             print(error.container.logs())
             logging.error("The container errored. Its logs:")
             with os.fdopen(sys.stderr.fileno(), "wb", closefd=False) as stderr:
-                stderr.write(error.container.logs())
+                stderr.write(error.container.logs(stdout=True, stderr=True))
                 stderr.flush()
             self.addCleanup(error.container.remove)
             raise
