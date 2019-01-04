@@ -8,6 +8,9 @@ services:
         ODOO_VERSION: $ODOO_MINOR
         WITHOUT_DEMO: "false"
     tty: true
+    networks:
+      default:
+      some_external_network:
     depends_on:
       - db
     environment:
@@ -24,6 +27,13 @@ services:
       POSTGRES_USER: odoo
     volumes:
       - db:/var/lib/postgresql/data:z
+
+networks:
+  default:
+    driver_opts:
+      encrypted: 1
+  some_external_network:
+    external: true
 
 volumes:
   db:

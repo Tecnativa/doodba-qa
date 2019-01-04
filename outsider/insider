@@ -16,6 +16,7 @@ import zipfile
 _logger = logging.getLogger("doodba-qa")
 _logger.setLevel(logging.DEBUG if os.environ["VERBOSE"] == "1"
                  else logging.INFO)
+ARTIFACTS_DIR = os.environ["ARTIFACTS_DIR"]
 LINTERS = {"flake8", "pylint"}
 
 # Check this file is being executed correctly
@@ -27,6 +28,8 @@ cmd = [
     "docker-compose", "run", "--rm",
     "-e", "ADDON_CATEGORIES",
     "-e", "VERBOSE",
+    # Remove TTY, needed to properly split STDOUT and STDERR
+    "-T",
     # Avoid possible routing problems in Traefik
     "--label", "traefik.enable=false",
 ]
@@ -68,14 +71,16 @@ with tempfile.TemporaryFile() as tmp_fd, \
         _logger.debug("Uncompressing artifacts")
         tmp_fd.seek(0)
         with zipfile.ZipFile(tmp_fd) as zip_fd:
-            zip_fd.extractall("artifacts")
-
-# List artifacts, in a special block to avoid walking dir if not needed
-if os.environ["VERBOSE"] == "1":
-    _logger.debug(
-        "Extracted artifacts:\n%s",
-        pprint.pformat(list(os.walk("artifacts"))),
-    )
+            zip_fd.extractall(ARTIFACTS_DIR)
+        # Fix artifacts folder permissions
+        uid = int(os.environ.get("ARTIFACTS_UID", os.getuid()))
+        gid = int(os.environ.get("ARTIFACTS_GID", os.getgid()))
+        if uid != os.getuid() or gid != os.getgid():
+            _logger.debug("Fixing artifacts permissions")
+            for root, dirs, files in os.walk(ARTIFACTS_DIR):
+                os.chown(root, uid, gid)
+                for target in dirs + files:
+                    os.chown(os.path.join(root, target), uid, gid)
 
 # Same return code as the insider command
 sys.exit(result.returncode)

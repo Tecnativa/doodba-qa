@@ -50,6 +50,14 @@ These flags are used for [the `addons` script](https://github.com/Tecnativa/dock
 
     docker-compose run --rm odoo addons --help
 
+### `ARTIFACTS_DIR`
+
+Directory where all the artifacts produced by insider scripts will be extracted.
+
+### `ARTIFACTS_UID` and `ARTIFACTS_GID`
+
+UID/GID to be set as owner for artifacts produced by insider scripts.
+
 ### `BUILD_FLAGS`
 
 Flags to append to `docker-compose build`. Defaults to `--pull --no-cache`.
@@ -110,7 +118,7 @@ Run addons' unit tests and report coverage.
 
 Usually you should run [`addons-install`](#addons-install) before.
 
-You will find the HTML report files in `./artifacts/coverage`.
+You will find the HTML report files in `./$ARTIFACTS_DIR/coverage`.
 
 ### `destroy`
 

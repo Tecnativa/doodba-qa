@@ -1,6 +1,7 @@
 FROM python:3-alpine
 ARG MQT=https://github.com/OCA/maintainer-quality-tools.git
 ENV ADDON_CATEGORIES="--private" \
+    ARTIFACTS_DIR="artifacts" \
     BUILD_FLAGS="--pull --no-cache" \
     COMPOSE_INTERACTIVE_NO_CLI=1 \
     CONTAINER_PREFIX="ci" \
