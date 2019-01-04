@@ -16,6 +16,7 @@ SCAFFOLDINGS_DIR = join(dirname(__file__), "scaffoldings")
 BASE_ENVIRON = {
     "DB_VERSION": os.environ.get("DB_VERSION", "11"),
     "ODOO_MINOR": os.environ.get("ODOO_MINOR", "12.0"),
+    "VERBOSE": "1",
 }
 
 
@@ -65,6 +66,7 @@ class ScaffoldingCase(unittest.TestCase):
             self.addCleanup(error.container.remove)
             raise
         logging.info("The container finished its execution. Its logs:")
+        print(result)
         with os.fdopen(sys.stderr.fileno(), "wb", closefd=False) as stderr:
             stderr.write(result)
             stderr.flush()
@@ -78,14 +80,9 @@ class ScaffoldingCase(unittest.TestCase):
 
     def test_500_flake8(self):
         """Check flake8 tests work fine."""
-        self.run_qa("0", "flake8")
+        self.run_qa("0", "flake8", environment={"ADDON_CATEGORIES": "-e"})
         with self.assertRaises(docker.errors.ContainerError):
-            self.run_qa(
-                "0", "flake8",
-                environment={
-                    "ADDON_CATEGORIES": "-e",
-                },
-            )
+            self.run_qa("0", "flake8")
 
 
 if __name__ == "__main__":
