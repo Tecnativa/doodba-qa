@@ -1,20 +1,18 @@
+# Include this file! See https://docs.gitlab.com/ce/ci/yaml/#include
 image: tecnativa/doodba-qa
 
 variables:
   COMPOSE_FILE: test.yaml
   COMPOSE_PROJECT_NAME: $CI_PROJECT_PATH_SLUG-$CI_COMMIT_REF_SLUG
-  DOCKER_DRIVER: overlay2
-  DOCKER_HOST: tcp://docker:2375/
+  # You must change this variable
   REVIEW_DOMAIN: ci.example.com
-
-services:
-  - docker:dind
 
 stages:
   - build
+  - rebuild
   - install
   - test
-  - test_cleanup
+  - test cleanup
   - runbot
   - push
 
@@ -33,6 +31,23 @@ Closed PRs:
   allow_failure: true
   script:
     - closed-prs
+
+# Manual jobs to update registry when you need to rebuild and there have been
+# no code changes on your scaffolding, or when the rest of your
+# pipeline failed, but you still need the new image in the registry
+Rebuild without cache and push: &rebuild
+  stage: rebuild
+  when: manual
+  only:
+    - /^\d+\.\d+$/
+  script:
+    - build
+    - docker-compose push
+
+Rebuild with cache and push:
+  <<: *rebuild
+  variables:
+    BUILD_FLAGS: --pull
 
 # Install
 Install addons:
@@ -76,10 +91,19 @@ Flake8:
 # Automated tests
 Test addons:
   variables:
-    ADDON_CATEGORIES: "--private --extra"
+    ADDON_CATEGORIES: >
+      --extra
+      --private
+      --without base_bank_from_iban
+      --without base_location
+      --without base_location_geonames_import
+      --without currency_rate_update
+      --without l10n_es
+      --without l10n_es_partner
+      --without l10n_es_toponyms
   script:
     - coverage
-    - mv artifacts/coverage .
+    - mv artifacts/coverage . || true
   artifacts:
     paths:
       - coverage
@@ -88,7 +112,7 @@ Test addons:
 
 # Free resources if something failed
 Cleanup failed test resources:
-  stage: test_cleanup
+  stage: test cleanup
   when: on_failure
   script:
     - shutdown
@@ -116,6 +140,7 @@ Destroy runbot:
   script:
     - destroy
 
+# Update registry
 Push docker image:
   stage: push
   only:
