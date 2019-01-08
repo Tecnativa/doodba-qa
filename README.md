@@ -1,5 +1,6 @@
 # Doodba Quality Assurance
 
+[![Build Status](https://travis-ci.org/Tecnativa/doodba-qa.svg?branch=master)](https://travis-ci.org/Tecnativa/doodba-qa)
 [![Docker Pulls](https://img.shields.io/docker/pulls/tecnativa/doodba-qa.svg)](https://hub.docker.com/r/tecnativa/doodba-qa)
 [![Layers](https://images.microbadger.com/badges/image/tecnativa/doodba-qa.svg)](https://microbadger.com/images/tecnativa/doodba-qa)
 [![Commit](https://images.microbadger.com/badges/commit/tecnativa/doodba-qa.svg)](https://microbadger.com/images/tecnativa/doodba-qa)
