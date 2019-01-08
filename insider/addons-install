@@ -10,7 +10,7 @@ addons="$(addons list -ix $ADDON_CATEGORIES)" || errorcode=$?
 [ "$errorcode" -eq 2 ] && exit 0 || [ "$errorcode" -eq 0 ]
 
 # Create DB if needed
-[ "$ODOO_VERSION" != 8.0 ] || createdb
+[ "$ODOO_VERSION" != 8.0 ] || createdb || true
 
 # Install all required addons
 addons init -x $ADDON_CATEGORIES

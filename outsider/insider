@@ -10,28 +10,33 @@ import os
 import pprint
 import subprocess
 import sys
-import tarfile
 import tempfile
-
-import docker
+import zipfile
 
 _logger = logging.getLogger("doodba-qa")
 _logger.setLevel(logging.DEBUG if os.environ["VERBOSE"] == "1"
                  else logging.INFO)
+ARTIFACTS_DIR = os.environ["ARTIFACTS_DIR"]
 LINTERS = {"flake8", "pylint"}
 
 # Check this file is being executed correctly
 script = os.path.basename(sys.argv[0])
-full_script = "/qa/insider/{}".format(script)
+full_script = None
+with open("/usr/local/src/insider/{}".format(script), "r") as fd:
+    full_script = fd.read()
 cmd = [
     "docker-compose", "run", "--rm",
     "-e", "ADDON_CATEGORIES",
     "-e", "VERBOSE",
-    # Mount insider dependencies
-    "-v", "{}:/qa".format(os.environ["QA_VOLUME"]),
+    # Remove TTY, needed to properly split STDOUT and STDERR
+    "-T",
     # Avoid possible routing problems in Traefik
     "--label", "traefik.enable=false",
 ]
+if os.environ["VERBOSE"] == "1":
+    cmd += [
+        "-e", "LOG_LEVEL=DEBUG",
+    ]
 if script in LINTERS:
     modes = {
         "loose": "travis_run_pylint.cfg",
@@ -49,43 +54,33 @@ if script in LINTERS:
         # Choose pylint configuration file to use
         "-e", "PYLINT_CONFIG_FILE={}".format(modes[os.environ["LINT_MODE"]]),
     ]
-cmd += ["odoo", full_script, *sys.argv[1:]]
-
-# Create the desired network if missing
-client = docker.from_env()
-try:
-    client.networks.get(os.environ["SHARED_NETWORK"])
-except docker.errors.NotFound:
-    client.networks.create(os.environ["SHARED_NETWORK"])
+cmd += ["odoo", "/qa/insider", full_script, *sys.argv[1:]]
 
 # Execute insider command
-result = subprocess.run(cmd)
-
-# Obtain artifacts from QA volume
-_logger.debug("Creating transit container")
-client.images.pull("debian", "9")
-transit = client.containers.create(
-    "debian:9",
-    volumes={
-        os.environ["QA_VOLUME"]: {"bind": "/qa", "mode": "rw"},
-    },
-)
-_logger.debug("Loading produced artifacts, if any")
-tar_stream, stat = transit.get_archive("/qa/artifacts")
-with tempfile.TemporaryFile() as tmp:
-    for chunk in tar_stream:
-        tmp.write(chunk)
-    tmp.seek(0)
-    # Extract artifacts into current container's expected path
-    with tarfile.open(fileobj=tmp) as tar:
-        tar.extractall()
-
-# List artifacts, in a special block to avoid walking dir if not needed
-if os.environ["VERBOSE"] == "1":
-    _logger.debug(
-        "Extracted artifacts:\n%s",
-        pprint.pformat(list(os.walk("artifacts"))),
-    )
+with tempfile.TemporaryFile() as tmp_fd, \
+        os.fdopen(sys.stderr.fileno(), "wb", closefd=False) as stderr_bytes:
+    result = subprocess.run(cmd, stdout=tmp_fd, stderr=stderr_bytes)
+    tmp_fd.flush()
+    tmp_fd.seek(0)
+    # Obtain artifacts or redirect logs
+    if not zipfile.is_zipfile(tmp_fd):
+        tmp_fd.seek(0)
+        stderr_bytes.write(tmp_fd.read())
+        stderr_bytes.flush()
+    else:
+        _logger.debug("Uncompressing artifacts")
+        tmp_fd.seek(0)
+        with zipfile.ZipFile(tmp_fd) as zip_fd:
+            zip_fd.extractall(ARTIFACTS_DIR)
+        # Fix artifacts folder permissions
+        uid = int(os.environ.get("ARTIFACTS_UID", os.getuid()))
+        gid = int(os.environ.get("ARTIFACTS_GID", os.getgid()))
+        if uid != os.getuid() or gid != os.getgid():
+            _logger.debug("Fixing artifacts permissions")
+            for root, dirs, files in os.walk(ARTIFACTS_DIR):
+                os.chown(root, uid, gid)
+                for target in dirs + files:
+                    os.chown(os.path.join(root, target), uid, gid)
 
 # Same return code as the insider command
 sys.exit(result.returncode)

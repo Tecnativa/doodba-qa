@@ -1,0 +1,40 @@
+version: "2.1"
+services:
+  odoo:
+    build:
+      context: ./
+      args:
+        COMPILE: "false"
+        ODOO_VERSION: $ODOO_MINOR
+        WITHOUT_DEMO: "false"
+    tty: true
+    networks:
+      default:
+      some_external_network:
+    depends_on:
+      - db
+    environment:
+      PGDATABASE: odoo
+      PYTHONOPTIMIZE: ""
+      UNACCENT: "false"
+    volumes:
+      - filestore:/var/lib/odoo:z
+
+  db:
+    image: postgres:${DB_VERSION}-alpine
+    environment:
+      POSTGRES_PASSWORD: odoopassword
+      POSTGRES_USER: odoo
+    volumes:
+      - db:/var/lib/postgresql/data:z
+
+networks:
+  default:
+    driver_opts:
+      encrypted: 1
+  some_external_network:
+    external: true
+
+volumes:
+  db:
+  filestore:

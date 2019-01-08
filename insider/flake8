@@ -10,9 +10,8 @@ addons="$(addons list -ifxs ' ' $ADDON_CATEGORIES)" || errorcode=$?
 [ "$errorcode" -eq 2 ] && exit 0 || [ "$errorcode" -eq 0 ]
 
 # Activate insider dependencies
-venv="/qa/py$(python -c 'import sys; print(sys.version[0])')"
-source $venv/bin/activate
-cd /qa/mqt
+source /qa/venv/bin/activate
+cd /qa
 export PATH="$PATH:/qa/mqt/travis"
 
 # Lint

@@ -18,9 +18,8 @@ if [ -n "$LINT_DISABLE" ]; then
 fi
 
 # Activate insider dependencies
-venv="/qa/py$(python -c 'import sys; print(sys.version[0])')"
-source $venv/bin/activate
-cd /qa/mqt
+source /qa/venv/bin/activate
+cd /qa
 
 # Lint
 # TODO Use MQT's `test_pylint` directly when it becomes more reusable

@@ -1,0 +1,42 @@
+sudo: required
+
+language: python
+
+python:
+  - "3.6"
+
+services:
+  - docker
+
+git:
+  depth: 1
+
+branches:
+  only:
+    - master
+
+env:
+  global:
+    # Variables found by default in Docker Hub builder
+    - IMAGE_NAME=tecnativa/doodba-qa:latest
+    # Postgres version to test
+    - DB_VERSION=11
+  matrix:
+    - ODOO_MINOR=8.0 DB_VERSION=9.6
+    - ODOO_MINOR=9.0 DB_VERSION=10
+    - ODOO_MINOR=10.0
+    - ODOO_MINOR=11.0
+    - ODOO_MINOR=12.0
+
+before_install:
+  - sudo apt-get update
+  - sudo apt-get -y -o Dpkg::Options::=--force-confnew install docker-ce
+  - pip install -r requirements-ci.txt
+
+install:
+  - chown -R $USER:$USER .
+  - chmod -R +r .
+  - ./hooks/build
+
+script:
+  - python -m unittest -v tests

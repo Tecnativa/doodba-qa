@@ -50,6 +50,14 @@ These flags are used for [the `addons` script](https://github.com/Tecnativa/dock
 
     docker-compose run --rm odoo addons --help
 
+### `ARTIFACTS_DIR`
+
+Directory where all the artifacts produced by insider scripts will be extracted.
+
+### `ARTIFACTS_UID` and `ARTIFACTS_GID`
+
+UID/GID to be set as owner for artifacts produced by insider scripts.
+
 ### `BUILD_FLAGS`
 
 Flags to append to `docker-compose build`. Defaults to `--pull --no-cache`.
@@ -78,21 +86,9 @@ Right now, only useful for [`pylint`](#pylint). Valid values:
 - `strict` uses pull request cfg.
 - `beta` uses beta cfg.
 
-### `QA_VOLUME`
-
-To be able to work fully offline, this image bundles all needed dependencies for linters, converage, etc. The problem is that sometimes these dependencies need to be available for the Doodba container itself.
-
-To give that container these dependencies, we create a transitionary volume and mount it in the Doodba container inside the `/qa` path.
-
-If you supply this variable, the same volume will be reused, instead of the default behavior of creating a volatile volume for each call. The volume must not exist before, because it will only be filled with QA tools the 1st time, when it is created.
-
 ### `REPOS_FILE`
 
 Path for the `repos.yaml` file in current scaffolding (*not* inside the container).
-
-### `SHARED_NETWORK`
-
-An external network that should always exist before running containers. It is created automatically if missing. Defaults to `inverseproxy_shared`.
 
 ## Scripts
 
@@ -122,7 +118,7 @@ Run addons' unit tests and report coverage.
 
 Usually you should run [`addons-install`](#addons-install) before.
 
-You will find the HTML report files in `./artifacts/coverage`.
+You will find the HTML report files in `./$ARTIFACTS_DIR/coverage`.
 
 ### `destroy`
 
@@ -131,6 +127,14 @@ Destroy all containers, volumes, local images and networks.
 ### `flake8`
 
 Lint code with [flake8](https://pypi.python.org/pypi/flake8) using [MQT][].
+
+### `networks-autocreate`
+
+Create missing external networks, which are not autocreated by docker compose because it expects them to be present at the time of booting an environment.
+
+Common examples of such networks are [`inverseproxy_shared`](https://github.com/Tecnativa/doodba#global-inverse-proxy) or [`globalwhitelist_shared`](https://github.com/Tecnativa/doodba#global-whitelist).
+
+It extracts the required networks from the chosen `docker-compose.yaml` file.
 
 ### `pylint`
 
