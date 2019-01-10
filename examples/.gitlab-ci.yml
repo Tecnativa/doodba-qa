@@ -38,7 +38,7 @@ Closed PRs:
 Rebuild without cache and push: &rebuild
   stage: rebuild
   when: manual
-  only:
+  only: &main_branches
     - /^\d+\.\d+$/
   script:
     - build
@@ -68,8 +68,7 @@ Pylint strict:
   <<: *pylint
   variables:
     LINT_MODE: "strict"
-  except: &main_branches
-    - ^\d+\.\d+$
+  except: *main_branches
 
 Pylint strict warnings:
   <<: *pylint
@@ -143,7 +142,6 @@ Destroy runbot:
 # Update registry
 Push docker image:
   stage: push
-  only:
-    - /^\d+\.\d+$/
+  only: *main_branches
   script:
     - docker-compose push
