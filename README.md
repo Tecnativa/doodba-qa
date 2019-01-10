@@ -63,6 +63,10 @@ UID/GID to be set as owner for artifacts produced by insider scripts.
 
 Flags to append to `docker-compose build`. Defaults to `--pull --no-cache`.
 
+### `DESTROY_FLAGS`
+
+Flags to append to `docker-compose down`. Defaults to `-v --rmi local --remove-orphans`.
+
 ### `LINT_DISABLE`
 
 Disables specific linter messages. Its format depends on the underlying linter.
@@ -105,7 +109,7 @@ Install requested addons.
 
 Build your project with `docker-compose` and check odoo works.
 
-Uses the [`BUILD_FLAGS`](#build-flags).
+Uses [`BUILD_FLAGS`](#build-flags).
 
 ### `closed-prs`
 
@@ -124,6 +128,8 @@ You will find the HTML report files in `./$ARTIFACTS_DIR/coverage`.
 ### `destroy`
 
 Destroy all containers, volumes, local images and networks.
+
+Uses [`DESTROY_FLAGS`](#destroy-flags).
 
 ### `flake8`
 

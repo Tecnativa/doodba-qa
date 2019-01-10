@@ -2,5 +2,5 @@
 set -e
 [ "$VERBOSE" -lt 1 ] || set -x
 
-# Destroy all containers, volumes, local images and networks
-docker-compose down -v --rmi local --remove-orphans
+# Destroy all specified stuff
+docker-compose down $DESTROY_FLAGS

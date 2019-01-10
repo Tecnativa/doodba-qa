@@ -5,6 +5,7 @@ ENV ADDON_CATEGORIES="--private" \
     BUILD_FLAGS="--pull --no-cache" \
     COMPOSE_INTERACTIVE_NO_CLI=1 \
     CONTAINER_PREFIX="ci" \
+    DESTROY_FLAGS="-v --rmi local --remove-orphans" \
     LANG=C.UTF-8 \
     LINT_DISABLE="manifest-required-author" \
     LINT_ENABLE="" \

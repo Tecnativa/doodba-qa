@@ -112,6 +112,11 @@ Test addons:
 # Free resources if something failed
 Cleanup failed test resources:
   stage: test cleanup
+  variables:
+    # Do not remove local images, just in case you want to force-push them
+    # using cache; you are expected to configure some kind of cleanup
+    # for your runner docker engine externally
+    DESTROY_FLAGS: -v --remove-orphans
   when: on_failure
   script:
     - shutdown
