@@ -94,16 +94,15 @@ Flake8:
 # Automated tests
 Test addons:
   variables:
+    # Testing --private addons is almost mandatory, and testing --extra addons
+    # (usually from OCA) or --core addons can help being sure
+    # your project has a good integration status, although there's a bigger
+    # risk that external addon changes break your pipelines innecessarily;
+    # you can also blacklist specific addons adding `--without myaddon` as
+    # many times as needed, or include them always by adding `--with myaddon`
     ADDON_CATEGORIES: >
       --extra
       --private
-      --without base_bank_from_iban
-      --without base_location
-      --without base_location_geonames_import
-      --without currency_rate_update
-      --without l10n_es
-      --without l10n_es_partner
-      --without l10n_es_toponyms
   script:
     - coverage
     - mv artifacts/coverage . || true
