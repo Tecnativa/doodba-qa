@@ -53,7 +53,11 @@ Rebuild with cache and push:
 Install addons:
   stage: install
   variables:
-    ADDON_CATEGORIES: "--private --extra --dependencies"
+    # Install all addons that are dependencies of the ones tested later
+    ADDON_CATEGORIES: >
+      --dependencies
+      --extra
+      --private
   script:
     - addons-install
 
