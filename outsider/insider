@@ -7,7 +7,6 @@ serve as an entrypoint only for them.
 """
 import logging
 import os
-import pprint
 import subprocess
 import sys
 import tempfile
