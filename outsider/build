@@ -1,15 +1,40 @@
-#!/usr/bin/env sh
-set -e
-[ "$VERBOSE" -lt 1 ] || set -x
+#!/usr/bin/env python3
+"""Pull prebuilt images, and build other images."""
 
-# Remove possibly preexisting stuff
-docker-compose down -v --remove-orphans
+import logging
+import os
+import subprocess
+import yaml
 
-# Build and pull images
-docker-compose pull --ignore-pull-failures
-docker-compose build $BUILD_FLAGS
+_logger = logging.getLogger("doodba-qa")
+_logger.setLevel(logging.DEBUG if os.environ["VERBOSE"] == "1"
+                 else logging.INFO)
+BUILD_FLAGS = os.environ["BUILD_FLAGS"].split()
+
+# Obtain project definition
+config = subprocess.check_output(["docker-compose", "config"])
+_logger.debug("Obtained docker-compose config:\n%s", config)
+config = yaml.safe_load(config)
+all_services = config.get("services", {})
+services_to_pull = [
+    name for (name, service) in all_services.items()
+    if "build" not in service
+]
+
+# Pull images
+_logger.debug("Pulling images for %s", services_to_pull)
+subprocess.check_call(["docker-compose", "pull", *services_to_pull])
+
+# Build images
+_logger.debug("Building services")
+subprocess.check_call(["docker-compose", "build", *BUILD_FLAGS])
 
 # Check odoo bin works
-docker-compose run --rm --no-deps \
-    -e WAIT_DB=false -e UNACCENT=false \
-    odoo --version
+if "odoo" in all_services:
+    _logger.debug("Checking if odoo service works")
+    subprocess.check_call([
+        "docker-compose", "run", "--rm", "--no-deps",
+        "-e", "WAIT_DB=false",
+        "-e", "UNACCENT=false",
+        "odoo", "--version",
+    ])
