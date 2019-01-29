@@ -133,6 +133,10 @@ class Scaffolding0Case(DoodbaQAScaffoldingCase):
             "index.html",
         )))
 
+    def test_500_curl(self):
+        """Make sure curl is installed and working."""
+        self.run_qa("curl", "--version")
+
     def test_500_flake8(self):
         """Check flake8 tests work fine."""
         # Defaults to private addons, where there are linter errors
