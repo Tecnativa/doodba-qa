@@ -1,1 +1,29 @@
-good_extra: ["*"]
+ONLY:
+  ODOO_VERSION:
+    - "8.0"
+good_extra:
+  - addon_v8
+---
+ONLY:
+  ODOO_VERSION:
+    - "9.0"
+good_extra:
+  - addon_v9
+---
+ONLY:
+  ODOO_VERSION:
+    - "10.0"
+good_extra:
+  - addon_v10
+---
+ONLY:
+  ODOO_VERSION:
+    - "11.0"
+good_extra:
+  - addon_v11
+---
+ONLY:
+  ODOO_VERSION:
+    - "12.0"
+good_extra:
+  - addon_v12
