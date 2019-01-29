@@ -3,7 +3,7 @@ image: tecnativa/doodba-qa
 
 variables:
   COMPOSE_FILE: test.yaml
-  COMPOSE_PROJECT_NAME: $CI_PROJECT_PATH_SLUG-$CI_COMMIT_REF_SLUG
+  COMPOSE_PROJECT_NAME: $CI_PROJECT_PATH_SLUG-$CI_PIPELINE_ID
   # You must change this variable
   REVIEW_DOMAIN: ci.example.com
 
