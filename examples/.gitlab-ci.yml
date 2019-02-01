@@ -106,6 +106,7 @@ Test addons:
     ADDON_CATEGORIES: >
       --extra
       --private
+      --without database_cleanup
   script:
     - coverage
     - mv artifacts/coverage . || true
