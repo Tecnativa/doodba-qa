@@ -106,6 +106,7 @@ Test addons:
     ADDON_CATEGORIES: >
       --extra
       --private
+      --without auth_brute_force
       --without database_cleanup
   script:
     - coverage
