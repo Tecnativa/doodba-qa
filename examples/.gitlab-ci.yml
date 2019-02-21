@@ -57,18 +57,25 @@ Install addons:
   stage: install
   variables:
     # Install all addons that are dependencies of the ones tested later
-    ADDON_CATEGORIES: >
+    ADDONS_STANDARD: >
       --dependencies
       --extra
       --private
   script:
+    # If you supply $ADDON_CATEGORIES, it will be used raw; but you can use
+    # instead a combination of $ADDONS_STANDARD (which can be in a template)
+    # and $ADDONS_CUSTOM (which can be in the scaffolding itself) to make it
+    # easier to add or remove addons to white or black lists
+    - &addon-categories export ADDON_CATEGORIES="${ADDON_CATEGORIES:-$ADDONS_STANDARD $ADDONS_CUSTOM}"
     - addons-install
 
 # Lint
 Pylint loose: &pylint
   variables:
+    ADDONS_STANDARD: --private
     LINT_MODE: "loose"
   script:
+    - *addon-categories
     - pylint
 
 Pylint strict:
@@ -91,7 +98,10 @@ Pylint beta warnings:
     LINT_MODE: "beta"
 
 Flake8:
+  variables:
+    ADDONS_STANDARD: --private
   script:
+    - *addon-categories
     - flake8
 
 # Automated tests
@@ -103,12 +113,13 @@ Test addons:
     # risk that external addon changes break your pipelines innecessarily;
     # you can also blacklist specific addons adding `--without myaddon` as
     # many times as needed, or include them always by adding `--with myaddon`
-    ADDON_CATEGORIES: >
+    ADDONS_STANDARD: >
       --extra
       --private
       --without auth_brute_force
       --without database_cleanup
   script:
+    - *addon-categories
     - coverage
     - mv artifacts/coverage . || true
   artifacts:
