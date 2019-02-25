@@ -51,6 +51,10 @@ These flags are used for [the `addons` script](https://github.com/Tecnativa/dock
 
     docker-compose run --rm odoo addons --help
 
+### `ADMIN_PASSWORD`
+
+Defaults to `admin`. If set, is used as the DB manager password.
+
 ### `ARTIFACTS_DIR`
 
 Directory where all the artifacts produced by insider scripts will be extracted.
@@ -90,6 +94,12 @@ Right now, only useful for [`pylint`](#pylint). Valid values:
 - `loose` (default) uses [MQT][] standard cfg.
 - `strict` uses pull request cfg.
 - `beta` uses beta cfg.
+
+### `PGPASSWORD`
+
+Used in [`secrets-setup`](#secrets-setup) when you need a specific DB password.
+
+Defaults to `odoopassword`.
 
 ### `REPOS_FILE`
 
@@ -148,6 +158,12 @@ It extracts the required networks from the chosen `docker-compose.yaml` file.
 Lint code with [pylint-odoo](https://github.com/OCA/pylint-odoo/) using [MQT][].
 
 Some [environment variables](#environment-variables) modify this script's behavior; check them out.
+
+### `secrets-setup`
+
+Creates all needed environment files for the official `test.yaml` environment to work.
+
+Uses [`ADMIN_PASSWORD`](#admin-password) and [`PGPASSWORD`](#pgpassword).
 
 ### `shutdown`
 
