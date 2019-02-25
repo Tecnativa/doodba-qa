@@ -30,6 +30,7 @@ class TestException(Exception):
 class DoodbaQAScaffoldingCase(unittest.TestCase):
     def setUp(self):
         super().setUp()
+        self.fulldir = join(SCAFFOLDINGS_DIR, self.directory)
         self.client = docker.from_env()
         self.environment = {}
         self.addCleanup(self.client.close)
@@ -151,6 +152,36 @@ class Scaffolding0Case(DoodbaQAScaffoldingCase):
             self.run_qa("pylint")
         self.environment["ADDON_CATEGORIES"] = "-e"
         self.run_qa("pylint")
+
+    def test_500_secrets_setup_defaults(self):
+        """Check secrets-setup works fine with default values."""
+        self.run_qa("secrets-setup")
+        values = {
+            "backup": "",
+            "db-access": "PGPASSWORD=odoopassword",
+            "db-creation": "POSTGRES_PASSWORD=odoopassword",
+            "odoo": "ADMIN_PASSWORD=admin",
+            "smtp": "",
+        }
+        for key, value in values.items():
+            with open(join(self.fulldir, ".docker", f"{key}.env")) as env_file:
+                self.assertEqual(value, env_file.read())
+
+    def test_500_secrets_setup_altered(self):
+        """Check secrets-setup works fine with altered values."""
+        self.environment["PGPASSWORD"] = "pgother"
+        self.environment["ADMIN_PASSWORD"] = "adminother"
+        self.run_qa("secrets-setup")
+        values = {
+            "backup": "",
+            "db-access": "PGPASSWORD=pgother",
+            "db-creation": "POSTGRES_PASSWORD=pgother",
+            "odoo": "ADMIN_PASSWORD=adminother",
+            "smtp": "",
+        }
+        for key, value in values.items():
+            with open(join(self.fulldir, ".docker", f"{key}.env")) as env_file:
+                self.assertEqual(value, env_file.read())
 
     def test_999_destroy(self):
         """Destroy everything related to this test case."""

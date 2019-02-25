@@ -1,6 +1,7 @@
 FROM python:3-alpine
 ARG MQT=https://github.com/OCA/maintainer-quality-tools.git
 ENV ADDON_CATEGORIES="--private" \
+    ADMIN_PASSWORD="admin" \
     ARTIFACTS_DIR="artifacts" \
     BUILD_FLAGS="--pull --no-cache" \
     COMPOSE_INTERACTIVE_NO_CLI=1 \
@@ -10,6 +11,7 @@ ENV ADDON_CATEGORIES="--private" \
     LINT_DISABLE="manifest-required-author" \
     LINT_ENABLE="" \
     LINT_MODE=strict \
+    PGPASSWORD="odoopassword" \
     REPOS_FILE="odoo/custom/src/repos.yaml" \
     VERBOSE=0
 RUN apk add --no-cache curl docker git
