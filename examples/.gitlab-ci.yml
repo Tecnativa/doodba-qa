@@ -3,8 +3,9 @@ image: tecnativa/doodba-qa
 
 variables:
   COMPOSE_FILE: test.yaml
-  COMPOSE_PROJECT_NAME: $CI_PROJECT_PATH_SLUG-$CI_PIPELINE_ID
+  COMPOSE_PROJECT_NAME: &pipeline $CI_PROJECT_PATH_SLUG-$CI_PIPELINE_ID
   DOODBA_WITHOUT_DEMO: "false"
+  ODOO_IMAGE: *pipeline
   # You must change this variable
   REVIEW_DOMAIN: ci.example.com
 
@@ -46,6 +47,7 @@ Rebuild without cache and push: &rebuild
   only: &main_branches
     - /^\d+\.\d+$/
   script:
+    - export -n ODOO_IMAGE
     - build
     - docker-compose push
 
@@ -167,7 +169,8 @@ Destroy runbot:
 
 # Update registry
 Push docker image:
+  <<*: *rebuild
   stage: push
-  only: *main_branches
-  script:
-    - docker-compose push
+  variables:
+    BUILD_FLAGS: ""
+  when: on_success
