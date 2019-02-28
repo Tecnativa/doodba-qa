@@ -169,7 +169,7 @@ Destroy runbot:
 
 # Update registry
 Push docker image:
-  <<*: *rebuild
+  <<: *rebuild
   stage: push
   variables:
     BUILD_FLAGS: ""
