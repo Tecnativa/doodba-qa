@@ -146,6 +146,10 @@ class Scaffolding0Case(DoodbaQAScaffoldingCase):
         self.environment["ADDON_CATEGORIES"] = "-e"
         self.run_qa("flake8")
 
+    def test_500_jq(self):
+        """The ``jq`` CLI tool should work."""
+        self.run_qa("jq", "--version")
+
     def test_500_pylint(self):
         """Check pylint tests work fine"""
         with self.assertRaises(TestException):
@@ -182,6 +186,10 @@ class Scaffolding0Case(DoodbaQAScaffoldingCase):
         for key, value in values.items():
             with open(join(self.fulldir, ".docker", f"{key}.env")) as env_file:
                 self.assertEqual(value, env_file.read())
+
+    def test_500_yq(self):
+        """The ``yq`` CLI tool should work."""
+        self.run_qa("yq", "--version")
 
     def test_999_destroy(self):
         """Destroy everything related to this test case."""

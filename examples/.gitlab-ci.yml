@@ -47,14 +47,20 @@ Rebuild without cache and push: &rebuild
   only: &main_branches
     - /^\d+\.\d+$/
   script:
+    - fake_image="$ODOO_IMAGE"
     - export -n ODOO_IMAGE
+    - real_image="$(docker-compose config | yq .services.odoo.image)"
+    - |
+      if [ -n "$fake_image" -a "$real_image" != "null" ]; then
+        docker image tag "$fake_image" "$real_image"
+      fi
     - build
     - docker-compose push
 
 Rebuild with cache and push:
   <<: *rebuild
   variables:
-    BUILD_FLAGS: --pull
+    BUILD_FLAGS: ""
 
 # Install
 Install addons:

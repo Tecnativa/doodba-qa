@@ -169,6 +169,13 @@ Uses [`ADMIN_PASSWORD`](#admin-password) and [`PGPASSWORD`](#pgpassword).
 
 Like [`destroy`](#destroy), but keeping volumes and images.
 
+## Other utilities
+
+These tools are not strictly related to Doodba, but they are helpful and are included:
+
+- [`jq`](https://stedolan.github.io/jq/)
+- [`yq`](https://yq.readthedocs.io/en/latest/)
+
 [1]: https://github.com/acsone/git-aggregator#show-closed-github-pull-requests
 [Doodba]: https://github.com/Tecnativa/docker-odoo-base
 [MQT]: https://github.com/OCA/maintainer-quality-tools
