@@ -1,6 +1,7 @@
 version: "2.1"
 services:
   odoo:
+    image: registry.example.com/user/myproject-odoo:$ODOO_MINOR
     build:
       context: ./
       args:
