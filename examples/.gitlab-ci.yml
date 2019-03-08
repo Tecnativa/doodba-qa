@@ -49,7 +49,7 @@ Rebuild without cache and push: &rebuild
   script:
     - fake_image="$ODOO_IMAGE"
     - export -n ODOO_IMAGE
-    - real_image="$(docker-compose config | yq .services.odoo.image)"
+    - real_image="$(docker-compose config | yq -r .services.odoo.image)"
     - |
       if [ -n "$fake_image" -a "$real_image" != "null" ]; then
         docker image tag "$fake_image" "$real_image"
