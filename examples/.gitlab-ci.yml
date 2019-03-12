@@ -47,6 +47,8 @@ Rebuild without cache and push: &rebuild
   only: &main_branches
     - /^\d+\.\d+$/
   script:
+    # Use or not cache depending on $BUILD_FLAGS for the job
+    - build
     # Obtain the odoo image being used in the pipeline
     - pipeline_image="$(docker-compose config | yq -r .services.odoo.image)"
     # Obtain the real odoo image name that will be pushed
@@ -56,8 +58,7 @@ Rebuild without cache and push: &rebuild
     - test -n "$real_image" -a "$real_image" != "null"
     # Rename pipeline image with real image name if possible
     - docker image tag "$pipeline_image" "$real_image" || true
-    # Use or not cache depending on $BUILD_FLAGS for the job
-    - build
+    # Push it to the registry, with any others being built
     - docker-compose push
 
 Rebuild with cache and push:
