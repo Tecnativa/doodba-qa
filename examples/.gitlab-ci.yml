@@ -57,7 +57,7 @@ Rebuild without cache and push: &rebuild
     # Fail if there's no real image to push
     - test -n "$real_image" -a "$real_image" != "null"
     # Rename pipeline image with real image name if possible
-    - docker image tag "$pipeline_image" "$real_image" || true
+    - docker image tag "$pipeline_image" "$real_image"
     # Push it to the registry, with any others being built
     - docker-compose push
 
