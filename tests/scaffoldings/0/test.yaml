@@ -22,7 +22,7 @@ services:
       - filestore:/var/lib/odoo:z
 
   db:
-    image: postgres:${DB_VERSION}-alpine
+    image: tecnativa/postgres-autoconf:${DB_VERSION}-alpine
     environment:
       POSTGRES_PASSWORD: odoopassword
       POSTGRES_USER: odoo
