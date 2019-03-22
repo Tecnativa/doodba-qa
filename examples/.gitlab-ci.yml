@@ -2,6 +2,7 @@
 image: tecnativa/doodba-qa
 
 variables:
+  ADDON_CATEGORIES: "" # Replaced by ADDONS_STANDARD and ADDONS_CUSTOM
   COMPOSE_FILE: test.yaml
   COMPOSE_PROJECT_NAME: &pipeline $CI_PROJECT_PATH_SLUG-$CI_PIPELINE_ID
   DOODBA_WITHOUT_DEMO: "false"
