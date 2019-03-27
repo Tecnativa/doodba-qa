@@ -15,12 +15,12 @@ stages:
   - rebuild
   - install
   - test
-  - test cleanup
   - runbot
   - push
   - deploy
   - staging
   - production
+  - cleanup
 
 before_script:
   - docker login -u "$CI_REGISTRY_USER" -p "$CI_REGISTRY_PASSWORD" "$CI_REGISTRY"
@@ -145,7 +145,7 @@ Test addons:
 
 # Free resources if something failed
 Cleanup failed test resources:
-  stage: test cleanup
+  stage: cleanup
   variables:
     # Do not remove local images, just in case you want to force-push them
     # using cache; you are expected to configure some kind of cleanup
