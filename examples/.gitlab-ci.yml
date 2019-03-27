@@ -133,6 +133,7 @@ Test addons:
       --private
       --without auth_brute_force
       --without database_cleanup
+      --without website_sale_require_login
   script:
     - *addon-categories
     - coverage
