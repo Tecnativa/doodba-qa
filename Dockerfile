@@ -12,10 +12,13 @@ ENV ADDON_CATEGORIES="--private" \
     LINT_ENABLE="" \
     LINT_MODE=strict \
     PGPASSWORD="odoopassword" \
+    PYTHONOPTIMIZE="" \
     REPOS_FILE="odoo/custom/src/repos.yaml" \
     VERBOSE=0
 RUN apk add --no-cache curl docker git jq
-RUN pip install --no-cache-dir docker-compose git-aggregator yq
+RUN apk add --no-cache -t .build build-base libffi-dev openssl-dev \
+    && pip install --no-cache-dir docker-compose git-aggregator yq \
+    && apk del .build
 # Scripts that run inside your Doodba's Odoo container
 COPY insider /usr/local/src/insider
 # Scripts that run in this container, usually against a docker engine
