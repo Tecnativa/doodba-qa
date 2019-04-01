@@ -101,6 +101,12 @@ Used in [`secrets-setup`](#secrets-setup) when you need a specific DB password.
 
 Defaults to `odoopassword`.
 
+### `PYTHONOPTIMIZE`
+
+By default it is `""` (disabled) to allow `assert` statements, which can be OK for tests, although not for production or demos.
+
+[More details in Python documentation](https://docs.python.org/3/using/cmdline.html#envvar-PYTHONOPTIMIZE).
+
 ### `REPOS_FILE`
 
 Path for the `repos.yaml` file in current scaffolding (*not* inside the container).

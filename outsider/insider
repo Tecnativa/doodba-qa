@@ -27,6 +27,7 @@ cmd = [
     "docker-compose", "run", "--rm",
     "-e", "ADDON_CATEGORIES",
     "-e", "VERBOSE",
+    "-e", "PYTHONOPTIMIZE",
     # Remove TTY, needed to properly split STDOUT and STDERR
     "-T",
     # Avoid possible routing problems in Traefik
