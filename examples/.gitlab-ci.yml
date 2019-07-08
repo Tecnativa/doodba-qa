@@ -49,7 +49,7 @@ Rebuild without cache and push: &rebuild
     - /^\d+\.\d+$/
   script:
     # Use or not cache depending on $BUILD_FLAGS for the job
-    - build
+    - test "$DO_BUILD" == 0 || build
     # Obtain the odoo image being used in the pipeline
     - pipeline_image="$(docker-compose config | yq -r .services.odoo.image)"
     # Obtain the real odoo image name that will be pushed
@@ -184,5 +184,5 @@ Push docker image:
   <<: *rebuild
   stage: push
   variables:
-    BUILD_FLAGS: ""
+    DO_BUILD: 0
   when: on_success
