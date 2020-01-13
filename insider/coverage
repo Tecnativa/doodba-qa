@@ -6,7 +6,12 @@ returncode=0
 addons="$(addons list -ix $ADDON_CATEGORIES)" || returncode=$?
 
 # If no addons are found, it's done
-[ "$returncode" -eq 2 ] && exit 0 || [ "$returncode" -eq 0 ]
+if [ "$returncode" -eq 2 ]; then
+    exit 0
+# If there's any other kind of error, fail now
+elif [ "$returncode" -ne 0 ]; then
+    exit "$returncode"
+fi
 
 # Activate insider dependencies
 source /qa/venv/bin/activate
