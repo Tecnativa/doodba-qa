@@ -1,10 +1,26 @@
-#!/bin/bash
-set -ex
+#!/usr/bin/env python3
+from plumbum import FG, local
 
-# See http://label-schema.org/rc1/#build-time-labels
-time docker image build \
-    --build-arg VCS_REF="$GIT_SHA1" \
-    --build-arg BUILD_DATE="$(date --rfc-3339 ns)" \
-    --build-arg VERSION="$DOCKER_TAG" \
-    --tag "$IMAGE_NAME" \
-    .
+COMMIT = local.env.get("GIT_SHA1", local.env.get("TRAVIS_COMMIT", ""))
+IMAGE_NAME = local.env["IMAGE_NAME"]
+ROOT = local.path(__file__).up(2)
+VERSION = IMAGE_NAME.split(":")[1]
+
+# Shortcuts
+build = local["time"]["docker", "image", "build"]
+date = local["date"]["--rfc-3339", "ns"]
+tag = local["docker"]["image", "tag"]
+
+# Build base and onbuild images
+build[
+    "--tag",
+    IMAGE_NAME,
+    # See http://label-schema.org/rc1/#build-time-labels
+    "--build-arg",
+    "VCS_REF=%s" % COMMIT,
+    "--build-arg",
+    "BUILD_DATE=%s" % date().strip(),
+    "--build-arg",
+    "VERSION=%s" % VERSION,
+    ROOT,
+] & FG
