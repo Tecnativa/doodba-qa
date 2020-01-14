@@ -1,0 +1,21 @@
+#!/usr/bin/env python3
+from plumbum import FG, local
+from plumbum.cmd import docker  # noqa pylint: disable=import-error
+
+IMAGE_NAME = local.env["IMAGE_NAME"]
+REPO = IMAGE_NAME.split(":")[0]
+
+# Log all locally available images; will help to pin images
+docker["image", "ls", "--digests", REPO] & FG
+
+# Login in Docker Hub
+docker(
+    "login",
+    "--username",
+    local.env["DOCKER_HUB_USERNAME"],
+    "--password",
+    local.env["DOCKER_HUB_TOKEN"],
+)
+
+# Push built image
+docker["image", "push", IMAGE_NAME] & FG
