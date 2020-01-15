@@ -21,6 +21,8 @@ env:
     - IMAGE_NAME=tecnativa/doodba-qa:latest
     # Postgres version to test
     - DB_VERSION=12
+    # This will avoid deploying a lot of times the same doodba-qa image
+    - DEPLOY_VERSION=13.0
   matrix:
     - ODOO_MINOR=8.0 DB_VERSION=9.6
     - ODOO_MINOR=9.0 DB_VERSION=10
@@ -47,3 +49,5 @@ deploy:
   script: ./hooks/push
   on:
     branch: master
+    condition:
+      - $ODOO_MINOR = $DEPLOY_VERSION
