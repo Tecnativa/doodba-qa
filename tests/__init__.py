@@ -134,6 +134,12 @@ class Scaffolding0Case(DoodbaQAScaffoldingCase):
             "index.html",
         )))
 
+    def test_500_coverage_wrong_categories(self):
+        """Test coverage fails if wrong categories are sent."""
+        self.environment["ADDON_CATEGORIES"] = "this is wrong"
+        with self.assertRaises(TestException):
+            self.run_qa("coverage")
+
     def test_500_curl(self):
         """Make sure curl is installed and working."""
         self.run_qa("curl", "--version")

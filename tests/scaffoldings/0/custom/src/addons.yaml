@@ -27,3 +27,9 @@ ONLY:
     - "12.0"
 good_extra:
   - addon_v12
+---
+  ONLY:
+    ODOO_VERSION:
+      - "13.0"
+  good_extra:
+    - addon_v13
