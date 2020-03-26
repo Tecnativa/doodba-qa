@@ -33,12 +33,6 @@ Pull and build images:
   script:
     - build
 
-Closed PRs:
-  stage: build
-  allow_failure: true
-  script:
-    - closed-prs
-
 # Manual jobs to update registry when you need to rebuild and there have been
 # no code changes on your scaffolding, or when the rest of your
 # pipeline failed, but you still need the new image in the registry
@@ -85,7 +79,38 @@ Install addons:
     - addons-install
 
 # Lint
+Closed PRs:
+  stage: test
+  allow_failure: true
+  when: always
+  script:
+    - closed-prs
+
+Run pre-commit:
+  stage: test
+  cache:
+    key:
+      files:
+        - .pre-commit-config.yaml
+    paths:
+      - .pre-commit-cache.~
+  when:
+    - when: always
+      exists:
+        - .pre-commit-config.yaml
+  environment:
+    PRE_COMMIT_HOME: "$CI_PROJECT_DIR/.pre-commit-cache.~"
+  script:
+    - pre-commit run -av --show-diff-on-failure
+
+# Deprecated linters
 Pylint loose: &pylint
+  stage: test
+  rules: &skip-if-pre-commit-exists
+    - when: never
+      exists:
+        - .pre-commit-config.yaml
+    - when: always
   variables:
     ADDONS_STANDARD: --private
     LINT_MODE: "loose"
@@ -113,6 +138,8 @@ Pylint beta warnings:
     LINT_MODE: "beta"
 
 Flake8:
+  stage: test
+  rules: *skip-if-pre-commit-exists
   variables:
     ADDONS_STANDARD: --private
   script:
