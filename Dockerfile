@@ -1,4 +1,4 @@
-FROM python:3-alpine
+FROM python:3-slim
 ARG MQT=https://github.com/OCA/maintainer-quality-tools.git
 ENV ADDON_CATEGORIES="--private" \
     ADMIN_PASSWORD="admin" \
@@ -12,13 +12,19 @@ ENV ADDON_CATEGORIES="--private" \
     LINT_ENABLE="" \
     LINT_MODE=strict \
     PGPASSWORD="odoopassword" \
+    PIPX_BIN_DIR="/usr/local/bin" \
     PYTHONOPTIMIZE="" \
     REPOS_FILE="odoo/custom/src/repos.yaml" \
     VERBOSE=0
-RUN apk add --no-cache curl docker git jq
-RUN apk add --no-cache -t .build build-base libffi-dev openssl-dev \
-    && pip install --no-cache-dir docker-compose git-aggregator yq \
-    && apk del .build
+RUN apt-get update \
+    && apt-get install -yqq curl docker.io git jq \
+    && apt-get clean \
+    && rm -rf /var/lib/apt/lists/ \
+    && pip install --no-cache-dir docker-compose pipx \
+    && pipx install git-aggregator \
+    && pipx install pre-commit \
+    && pipx install yq \
+    && sync
 # Scripts that run inside your Doodba's Odoo container
 COPY insider /usr/local/src/insider
 # Scripts that run in this container, usually against a docker engine

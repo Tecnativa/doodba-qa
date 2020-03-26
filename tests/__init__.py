@@ -156,6 +156,10 @@ class Scaffolding0Case(DoodbaQAScaffoldingCase):
         """The ``jq`` CLI tool should work."""
         self.run_qa("jq", "--version")
 
+    def test_500_pre_commit(self):
+        """The ``pre-commit`` CLI tool should work."""
+        self.run_qa("pre-commit", "--version")
+
     def test_500_pylint(self):
         """Check pylint tests work fine"""
         with self.assertRaises(TestException):
