@@ -38,9 +38,9 @@ Pull and build images:
 # pipeline failed, but you still need the new image in the registry
 Rebuild without cache and push: &rebuild
   stage: rebuild
-  when: manual
-  only: &main_branches
-    - /^\d+\.\d+$/
+  rules:
+    - if: &main-branches $CI_COMMIT_REF_NAME =~ /^\d+\.\d+$/
+      when: manual
   script:
     # Use or not cache depending on $BUILD_FLAGS for the job
     - test "$DO_BUILD" == 0 || build
@@ -94,11 +94,11 @@ Run pre-commit:
         - .pre-commit-config.yaml
     paths:
       - .pre-commit-cache.~
-  when:
+  rules:
     - when: always
       exists:
         - .pre-commit-config.yaml
-  environment:
+  variables:
     PRE_COMMIT_HOME: "$CI_PROJECT_DIR/.pre-commit-cache.~"
   script:
     - pre-commit run -av --show-diff-on-failure
@@ -106,8 +106,9 @@ Run pre-commit:
 # Deprecated linters
 Pylint loose: &pylint
   stage: test
-  rules: &skip-if-pre-commit-exists
-    - when: never
+  rules:
+    - &skip-if-pre-commit-exists
+      when: never
       exists:
         - .pre-commit-config.yaml
     - when: always
@@ -118,18 +119,16 @@ Pylint loose: &pylint
     - *addon-categories
     - pylint
 
-Pylint strict:
-  <<: *pylint
-  variables:
-    LINT_MODE: "strict"
-  except: *main_branches
-
 Pylint strict warnings:
   <<: *pylint
-  allow_failure: true
+  rules:
+    - *skip-if-pre-commit-exists
+    - if: *main-branches
+      when: always
+      allow_failure: true
+    - when: always
   variables:
     LINT_MODE: "strict"
-  only: *main_branches
 
 Pylint beta warnings:
   <<: *pylint
@@ -139,7 +138,9 @@ Pylint beta warnings:
 
 Flake8:
   stage: test
-  rules: *skip-if-pre-commit-exists
+  rules:
+    - *skip-if-pre-commit-exists
+    - when: always
   variables:
     ADDONS_STANDARD: --private
   script:
@@ -212,4 +213,6 @@ Push docker image:
   stage: push
   variables:
     DO_BUILD: 0
-  when: on_success
+  rules:
+    - if: *main-branches
+      when: on_success
