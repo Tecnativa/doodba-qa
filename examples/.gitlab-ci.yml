@@ -1,6 +1,13 @@
 # Include this file! See https://docs.gitlab.com/ce/ci/yaml/#include
 image: tecnativa/doodba-qa
 
+.standard-rules: &standard-rules
+  rules:
+    - if: &main-mr $CI_MERGE_REQUEST_TARGET_BRANCH_NAME =~ /^\d+\.\d+$/
+      when: on_success
+    - if: &main-branches $CI_COMMIT_REF_NAME =~ /^\d+\.\d+$/
+      when: on_success
+
 variables:
   ADDON_CATEGORIES: "" # Replaced by ADDONS_STANDARD and ADDONS_CUSTOM
   COMPOSE_FILE: test.yaml
@@ -29,24 +36,20 @@ before_script:
 
 # Build
 Pull and build images:
+  <<: *standard-rules
   stage: build
   script:
     - build
-
-Closed PRs:
-  stage: build
-  allow_failure: true
-  script:
-    - closed-prs
 
 # Manual jobs to update registry when you need to rebuild and there have been
 # no code changes on your scaffolding, or when the rest of your
 # pipeline failed, but you still need the new image in the registry
 Rebuild without cache and push: &rebuild
   stage: rebuild
-  when: manual
-  only: &main_branches
-    - /^\d+\.\d+$/
+  rules:
+    - if: *main-branches
+      when: manual
+      allow_failure: true
   script:
     # Use or not cache depending on $BUILD_FLAGS for the job
     - test "$DO_BUILD" == 0 || build
@@ -69,6 +72,7 @@ Rebuild with cache and push:
 
 # Install
 Install addons:
+  <<: *standard-rules
   stage: install
   variables:
     # Install all addons that are dependencies of the ones tested later
@@ -85,7 +89,51 @@ Install addons:
     - addons-install
 
 # Lint
+Closed PRs:
+  stage: test
+  allow_failure: true
+  rules:
+    - if: *main-mr
+      when: always
+    - if: *main-branches
+      when: always
+  script:
+    - closed-prs
+
+Run pre-commit:
+  stage: test
+  cache:
+    key:
+      files:
+        - .pre-commit-config.yaml
+    paths:
+      - .pre-commit-cache.~
+  rules:
+    - if: *main-mr
+      when: always
+      exists:
+        - .pre-commit-config.yaml
+    - if: *main-branches
+      when: always
+      exists:
+        - .pre-commit-config.yaml
+  variables:
+    PRE_COMMIT_HOME: "$CI_PROJECT_DIR/.pre-commit-cache.~"
+  script:
+    - pre-commit run -av --color always --show-diff-on-failure
+
+# Deprecated linters
 Pylint loose: &pylint
+  stage: test
+  rules:
+    - &skip-if-pre-commit-exists
+      when: never
+      exists:
+        - .pre-commit-config.yaml
+    - if: *main-mr
+      when: always
+    - if: *main-branches
+      when: always
   variables:
     ADDONS_STANDARD: --private
     LINT_MODE: "loose"
@@ -93,18 +141,17 @@ Pylint loose: &pylint
     - *addon-categories
     - pylint
 
-Pylint strict:
-  <<: *pylint
-  variables:
-    LINT_MODE: "strict"
-  except: *main_branches
-
 Pylint strict warnings:
   <<: *pylint
-  allow_failure: true
+  rules:
+    - *skip-if-pre-commit-exists
+    - if: *main-branches
+      when: always
+      allow_failure: true
+    - if: *main-mr
+      when: always
   variables:
     LINT_MODE: "strict"
-  only: *main_branches
 
 Pylint beta warnings:
   <<: *pylint
@@ -113,6 +160,13 @@ Pylint beta warnings:
     LINT_MODE: "beta"
 
 Flake8:
+  stage: test
+  rules:
+    - *skip-if-pre-commit-exists
+    - if: *main-mr
+      when: always
+    - if: *main-branches
+      when: always
   variables:
     ADDONS_STANDARD: --private
   script:
@@ -121,6 +175,7 @@ Flake8:
 
 # Automated tests
 Test addons:
+  <<: *standard-rules
   variables:
     # Testing --private addons is almost mandatory, and testing --extra addons
     # (usually from OCA) or --core addons can help being sure
@@ -147,17 +202,22 @@ Test addons:
 # Free resources if something failed
 Cleanup failed test resources:
   stage: cleanup
+  rules:
+    - if: *main-branches
+      when: on_failure
+    - if: *main-mr
+      when: on_failure
   variables:
     # Do not remove local images, just in case you want to force-push them
     # using cache; you are expected to configure some kind of cleanup
     # for your runner docker engine externally
     DESTROY_FLAGS: -v --remove-orphans
-  when: on_failure
   script:
     - shutdown
 
 # Runbot
 Boot runbot:
+  <<: *standard-rules
   stage: runbot
   variables:
     DOMAIN_TEST: $CI_ENVIRONMENT_SLUG.$REVIEW_DOMAIN
@@ -172,7 +232,13 @@ Boot runbot:
 
 Destroy runbot:
   stage: runbot
-  when: manual
+  rules:
+    - if: *main-branches
+      when: manual
+      allow_failure: true
+    - if: *main-mr
+      when: manual
+      allow_failure: true
   environment:
     name: review $CI_COMMIT_REF_NAME
     action: stop
@@ -185,4 +251,6 @@ Push docker image:
   stage: push
   variables:
     DO_BUILD: 0
-  when: on_success
+  rules:
+    - if: *main-branches
+      when: on_success
