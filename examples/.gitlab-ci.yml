@@ -33,14 +33,20 @@ Pull and build images:
   script:
     - build
 
+Closed PRs:
+  stage: build
+  allow_failure: true
+  script:
+    - closed-prs
+
 # Manual jobs to update registry when you need to rebuild and there have been
 # no code changes on your scaffolding, or when the rest of your
 # pipeline failed, but you still need the new image in the registry
 Rebuild without cache and push: &rebuild
   stage: rebuild
-  rules:
-    - if: &main-branches $CI_COMMIT_REF_NAME =~ /^\d+\.\d+$/
-      when: manual
+  when: manual
+  only: &main_branches
+    - /^\d+\.\d+$/
   script:
     # Use or not cache depending on $BUILD_FLAGS for the job
     - test "$DO_BUILD" == 0 || build
@@ -79,39 +85,7 @@ Install addons:
     - addons-install
 
 # Lint
-Closed PRs:
-  stage: test
-  allow_failure: true
-  when: always
-  script:
-    - closed-prs
-
-Run pre-commit:
-  stage: test
-  cache:
-    key:
-      files:
-        - .pre-commit-config.yaml
-    paths:
-      - .pre-commit-cache.~
-  rules:
-    - when: always
-      exists:
-        - .pre-commit-config.yaml
-  variables:
-    PRE_COMMIT_HOME: "$CI_PROJECT_DIR/.pre-commit-cache.~"
-  script:
-    - pre-commit run -av --show-diff-on-failure
-
-# Deprecated linters
 Pylint loose: &pylint
-  stage: test
-  rules:
-    - &skip-if-pre-commit-exists
-      when: never
-      exists:
-        - .pre-commit-config.yaml
-    - when: always
   variables:
     ADDONS_STANDARD: --private
     LINT_MODE: "loose"
@@ -119,16 +93,18 @@ Pylint loose: &pylint
     - *addon-categories
     - pylint
 
-Pylint strict warnings:
+Pylint strict:
   <<: *pylint
-  rules:
-    - *skip-if-pre-commit-exists
-    - if: *main-branches
-      when: always
-      allow_failure: true
-    - when: always
   variables:
     LINT_MODE: "strict"
+  except: *main_branches
+
+Pylint strict warnings:
+  <<: *pylint
+  allow_failure: true
+  variables:
+    LINT_MODE: "strict"
+  only: *main_branches
 
 Pylint beta warnings:
   <<: *pylint
@@ -137,10 +113,6 @@ Pylint beta warnings:
     LINT_MODE: "beta"
 
 Flake8:
-  stage: test
-  rules:
-    - *skip-if-pre-commit-exists
-    - when: always
   variables:
     ADDONS_STANDARD: --private
   script:
@@ -213,6 +185,4 @@ Push docker image:
   stage: push
   variables:
     DO_BUILD: 0
-  rules:
-    - if: *main-branches
-      when: on_success
+  when: on_success
