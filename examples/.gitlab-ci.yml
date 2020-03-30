@@ -23,12 +23,12 @@ stages:
   - install
   - test
   - runbot
-  - ci-cleanup
+  - ci cleanup
   - push
   - deploy
   - staging
   - production
-  - cd-cleanup
+  - cd cleanup
 
 before_script:
   - docker login -u "$CI_REGISTRY_USER" -p "$CI_REGISTRY_PASSWORD" "$CI_REGISTRY"
@@ -202,7 +202,7 @@ Test addons:
 
 # Free resources if something failed
 Cleanup failed test resources:
-  stage: ci-cleanup
+  stage: ci cleanup
   rules:
     - if: *main-branches
       when: on_failure
