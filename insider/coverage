@@ -14,6 +14,12 @@ addons="$(addons list -ix $ADDON_CATEGORIES)" || returncode=$?
 # Activate insider dependencies
 source /qa/venv/bin/activate
 
+# Create coverage artifacts storage
+mkdir -p /qa/artifacts/coverage
+
+# Symlink default screenshots and screencasts location into artifacts storage
+ln -s /opt/odoo/auto/test-artifacts /qa/artifacts/test-artifacts
+
 # Test addons and report coverage
 odoo="$(realpath "$(which odoo)")"
 cd
@@ -23,6 +29,5 @@ coverage run \
     "$odoo" --stop-after-init --workers 0 --test-enable --init "$addons"
 returncode=$?
 coverage report --skip-covered
-mkdir -p /qa/artifacts/coverage
 coverage html --skip-covered --directory /qa/artifacts/coverage
 exit $returncode
