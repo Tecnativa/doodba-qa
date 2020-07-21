@@ -15,10 +15,10 @@ addons="$(addons list -ix $ADDON_CATEGORIES)" || returncode=$?
 source /qa/venv/bin/activate
 
 # Create coverage artifacts storage
-mkdir -p /qa/artifacts/coverage
+mkdir -p /qa/artifacts/{coverage,test-artifacts}
 
 # Symlink default screenshots and screencasts location into artifacts storage
-ln -s /opt/odoo/auto/test-artifacts /qa/artifacts/test-artifacts
+ln -s /qa/artifacts/test-artifacts /opt/odoo/auto/test-artifacts
 
 # Test addons and report coverage
 odoo="$(realpath "$(which odoo)")"
