@@ -3,7 +3,7 @@
 
 # Use Git Aggregator to get closed PRs
 tmp="$(mktemp)"
-gitaggregate show-closed-prs -c "$REPOS_FILE" 2>&1 | tee "$tmp"
+gitaggregate -c "$REPOS_FILE" show-closed-prs 2>&1 | tee "$tmp"
 
 # If there was output, fail
 if [ -s $tmp ]; then
