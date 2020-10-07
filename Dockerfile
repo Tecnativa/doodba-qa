@@ -17,7 +17,7 @@ ENV ADDON_CATEGORIES="--private" \
     REPOS_FILE="odoo/custom/src/repos.yaml" \
     VERBOSE=0
 RUN apt-get update \
-    && apt-get install -yqq curl docker.io git jq \
+    && apt-get install -yqq curl docker.io git jq build-essential python3-dev \
     && apt-get clean \
     && rm -rf /var/lib/apt/lists/ \
     && pip install --no-cache-dir docker-compose pipx \
