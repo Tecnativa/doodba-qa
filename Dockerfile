@@ -25,6 +25,7 @@ RUN apt-get update \
         docker.io \
         git \
         jq \
+        zlib1g-dev \
     && apt-get clean \
     && rm -rf /var/lib/apt/lists/ \
     && pip install --no-cache-dir docker-compose pipx \
