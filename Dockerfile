@@ -34,6 +34,7 @@ RUN apt-get update \
     && pipx install git-aggregator \
     && pipx install pre-commit \
     && pipx install yq \
+    && pip install --no-cache-dir "docker>=7,<8" \
     && curl -fsSLO "https://download.docker.com/linux/static/stable/x86_64/docker-${DOCKER_VERSION}.tgz" \
     && tar xzvf "docker-${DOCKER_VERSION}.tgz" --strip-components=1 -C /usr/local/bin docker/docker \
     && rm "docker-${DOCKER_VERSION}.tgz" \
