@@ -1,4 +1,4 @@
-FROM python:3-slim
+FROM python:3.12-slim
 ARG MQT=https://github.com/OCA/maintainer-quality-tools.git
 ENV ADDON_CATEGORIES="--private" \
     ADMIN_PASSWORD="admin" \
@@ -15,23 +15,33 @@ ENV ADDON_CATEGORIES="--private" \
     PIPX_BIN_DIR="/usr/local/bin" \
     PYTHONOPTIMIZE="" \
     REPOS_FILE="odoo/custom/src/repos.yaml" \
-    VERBOSE=0
+    VERBOSE=0 \
+    DOCKER_VERSION=27.3.1 \
+    DOCKER_COMPOSE_VERSION=2.30.3
 RUN apt-get update \
     && apt-get install -yqq \
         build-essential \
         libxml2-dev \
+        libxml2-dev \
         libxslt-dev \
         curl \
-        docker.io \
         git \
         jq \
         zlib1g-dev \
     && apt-get clean \
     && rm -rf /var/lib/apt/lists/ \
-    && pip install --no-cache-dir docker-compose pipx \
+    && pip install --no-cache-dir pipx \
     && pipx install git-aggregator \
     && pipx install pre-commit \
     && pipx install yq \
+    && curl -fsSLO "https://download.docker.com/linux/static/stable/x86_64/docker-${DOCKER_VERSION}.tgz" \
+    && tar xzvf "docker-${DOCKER_VERSION}.tgz" --strip-components=1 -C /usr/local/bin docker/docker \
+    && rm "docker-${DOCKER_VERSION}.tgz" \
+    && mkdir -p /usr/local/lib/docker/cli-plugins \
+    && curl -fsSLo /usr/local/lib/docker/cli-plugins/docker-compose \
+         "https://github.com/docker/compose/releases/download/v${DOCKER_COMPOSE_VERSION}/docker-compose-linux-x86_64" \
+    && chmod +x /usr/local/lib/docker/cli-plugins/docker-compose \
+    && ln -s /usr/local/lib/docker/cli-plugins/docker-compose /usr/local/bin/docker-compose \
     && sync
 # Scripts that run inside your Doodba's Odoo container
 COPY insider /usr/local/src/insider
