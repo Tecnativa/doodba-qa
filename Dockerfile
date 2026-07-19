@@ -16,8 +16,8 @@ ENV ADDON_CATEGORIES="--private" \
     PYTHONOPTIMIZE="" \
     REPOS_FILE="odoo/custom/src/repos.yaml" \
     VERBOSE=0 \
-    DOCKER_VERSION=27.3.1 \
-    DOCKER_COMPOSE_VERSION=2.30.3
+    DOCKER_VERSION=29.6.1 \
+    DOCKER_COMPOSE_VERSION=2.40.3
 RUN apt-get update \
     && apt-get install -yqq \
         build-essential \
