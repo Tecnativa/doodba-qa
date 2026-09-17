@@ -12,8 +12,8 @@ _logger.setLevel(logging.DEBUG if os.environ["VERBOSE"] == "1"
 BUILD_FLAGS = os.environ["BUILD_FLAGS"].split()
 
 # Obtain project definition
-config = subprocess.check_output(["docker-compose", "config"])
-_logger.debug("Obtained docker-compose config:\n%s", config)
+config = subprocess.check_output(["docker", "compose", "config"])
+_logger.debug("Obtained docker compose config:\n%s", config)
 config = yaml.safe_load(config)
 all_services = config.get("services", {})
 services_to_pull = [
@@ -23,17 +23,17 @@ services_to_pull = [
 
 # Pull images
 _logger.debug("Pulling images for %s", services_to_pull)
-subprocess.check_call(["docker-compose", "pull", *services_to_pull])
+subprocess.check_call(["docker", "compose", "pull", *services_to_pull])
 
 # Build images
 _logger.debug("Building services")
-subprocess.check_call(["docker-compose", "build", *BUILD_FLAGS])
+subprocess.check_call(["docker", "compose", "build", *BUILD_FLAGS])
 
 # Check odoo bin works
 if "odoo" in all_services:
     _logger.debug("Checking if odoo service works")
     subprocess.check_call([
-        "docker-compose", "run", "--rm", "--no-deps",
+        "docker", "compose", "run", "--rm",
         "-e", "WAIT_DB=false",
         "-e", "UNACCENT=false",
         "odoo", "--version",

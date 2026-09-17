@@ -16,10 +16,15 @@ ENV ADDON_CATEGORIES="--private" \
     PYTHONOPTIMIZE="" \
     REPOS_FILE="odoo/custom/src/repos.yaml" \
     VERBOSE=0 \
-    DOCKER_VERSION=29.6.1 \
-    DOCKER_COMPOSE_VERSION=2.40.3
-RUN apt-get update \
-    && apt-get install -yqq \
+    DOCKER_VERSION=29.8.1 \
+    DOCKER_COMPOSE_VERSION=5.5.1 \
+    DOCKER_BUILDX_VERSION=0.37.1
+RUN --mount=type=cache,target=/var/lib/apt/lists \
+    --mount=type=cache,target=/var/cache/apt \
+    --mount=type=cache,target=/root/.cache/pip,id=pip-cache \
+    --mount=target=/tmp,type=tmpfs \
+    apt update \
+    && apt install -yqq \
         build-essential \
         libxml2-dev \
         libxml2-dev \
@@ -28,21 +33,20 @@ RUN apt-get update \
         git \
         jq \
         zlib1g-dev \
-    && apt-get clean \
-    && rm -rf /var/lib/apt/lists/ \
     && pip install --no-cache-dir pipx \
     && pipx install git-aggregator \
     && pipx install pre-commit \
     && pipx install yq \
-    && pip install --no-cache-dir "docker>=7,<8" "PyYAML>=6,<7" \
-    && curl -fsSLO "https://download.docker.com/linux/static/stable/x86_64/docker-${DOCKER_VERSION}.tgz" \
-    && tar xzvf "docker-${DOCKER_VERSION}.tgz" --strip-components=1 -C /usr/local/bin docker/docker \
-    && rm "docker-${DOCKER_VERSION}.tgz" \
+    && pip install --no-cache-dir "docker>=7" "PyYAML>=6" \
+    && curl -fsSLo /tmp/docker.tgz "https://download.docker.com/linux/static/stable/x86_64/docker-${DOCKER_VERSION}.tgz" \
+    && tar xzvf /tmp/docker.tgz --strip-components=1 -C /usr/local/bin docker/docker \
     && mkdir -p /usr/local/lib/docker/cli-plugins \
     && curl -fsSLo /usr/local/lib/docker/cli-plugins/docker-compose \
          "https://github.com/docker/compose/releases/download/v${DOCKER_COMPOSE_VERSION}/docker-compose-linux-x86_64" \
     && chmod +x /usr/local/lib/docker/cli-plugins/docker-compose \
-    && ln -s /usr/local/lib/docker/cli-plugins/docker-compose /usr/local/bin/docker-compose \
+    && curl -fsSLo /usr/local/lib/docker/cli-plugins/docker-buildx\
+         "https://github.com/docker/buildx/releases/download/v${DOCKER_BUILDX_VERSION}/buildx-v${DOCKER_BUILDX_VERSION}.linux-amd64" \
+    && chmod +x /usr/local/lib/docker/cli-plugins/docker-buildx \
     && sync
 # Scripts that run inside your Doodba's Odoo container
 COPY insider /usr/local/src/insider

@@ -55,16 +55,16 @@ Rebuild without cache and push: &rebuild
     # Use or not cache depending on $BUILD_FLAGS for the job
     - test "$DO_BUILD" == 0 || build
     # Obtain the services that build images
-    - image_builder_services="$(docker-compose config | yq -r '.services|to_entries|map(select(.value.build))[].key')"
+    - image_builder_services="$(docker compose config | yq -r '.services|to_entries|map(select(.value.build))[].key')"
     # Re-tag pipeline-specific images with their real registry names
     - |
       for service in $image_builder_services; do
-        pipeline_image="$(docker-compose config | yq --arg service "$service" -r '.services[$service].image')"
-        real_image="$(env -u ODOO_IMAGE docker-compose config | yq --arg service "$service" -r '.services[$service].image')"
+        pipeline_image="$(docker compose config | yq --arg service "$service" -r '.services[$service].image')"
+        real_image="$(env -u ODOO_IMAGE docker compose config | yq --arg service "$service" -r '.services[$service].image')"
         docker image tag "$pipeline_image" "$real_image"
       done
     # Push real images to the registry, with any others being built
-    - env -u ODOO_IMAGE docker-compose push
+    - env -u ODOO_IMAGE docker compose push
 
 Rebuild with cache and push:
   <<: *rebuild
@@ -229,7 +229,7 @@ Boot runbot:
     url: https://$CI_ENVIRONMENT_SLUG.$REVIEW_DOMAIN
     on_stop: Destroy runbot
   script:
-    - docker-compose up -d
+    - docker compose up -d
 
 Destroy runbot:
   stage: runbot

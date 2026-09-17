@@ -49,7 +49,7 @@ You can change it per job, using any of `--private --extra --core` (or `-pec`).
 
 These flags are used for [the `addons` script](https://github.com/Tecnativa/docker-odoo-base#addons) available in all Doodba projects. Use this command in your project's folder to understand its usage:
 
-    docker-compose run --rm odoo addons --help
+    docker compose run --rm odoo addons --help
 
 ### `ADMIN_PASSWORD`
 
@@ -65,11 +65,11 @@ UID/GID to be set as owner for artifacts produced by insider scripts.
 
 ### `BUILD_FLAGS`
 
-Flags to append to `docker-compose build`. Defaults to `--pull --no-cache`.
+Flags to append to `docker compose build`. Defaults to `--pull --no-cache`.
 
 ### `DESTROY_FLAGS`
 
-Flags to append to `docker-compose down`. Defaults to `-v --rmi local --remove-orphans`.
+Flags to append to `docker compose down`. Defaults to `-v --rmi local --remove-orphans`.
 
 ### `LINT_DISABLE`
 
@@ -113,7 +113,7 @@ Path for the `repos.yaml` file in current scaffolding (*not* inside the containe
 
 ## Scripts
 
-You can use `sh`, `docker` and `docker-compose` commands with all of their features.
+You can use `sh`, `docker` and `docker compose` commands with all of their features.
 
 Besides, there are other scripts bundled, useful to do a CI pipeline:
 
@@ -123,7 +123,7 @@ Install requested addons.
 
 ### `build`
 
-Build your project with `docker-compose` and check odoo works.
+Build your project with `docker compose` and check odoo works.
 
 Uses [`BUILD_FLAGS`](#build-flags).
 
@@ -157,7 +157,7 @@ Create missing external networks, which are not autocreated by docker compose be
 
 Common examples of such networks are [`inverseproxy_shared`](https://github.com/Tecnativa/doodba#global-inverse-proxy) or [`globalwhitelist_shared`](https://github.com/Tecnativa/doodba#global-whitelist).
 
-It extracts the required networks from the chosen `docker-compose.yaml` file.
+It extracts the required networks from the chosen `docker compose.yaml` file.
 
 ### `pylint`
 
