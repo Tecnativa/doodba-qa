@@ -12,7 +12,7 @@ import docker
 
 
 logging.root.setLevel(logging.INFO)
-IMAGE = os.environ.get("IMAGE_NAME", "tecnativa/doodba-qa:latest")
+IMAGE = os.environ.get("IMAGE_NAME", "tecnativa/doodba-qa:testonly")
 SCAFFOLDINGS_DIR = join(dirname(__file__), "scaffoldings")
 BASE_ENVIRON = {
     "ARTIFACTS_UID": os.getuid(),

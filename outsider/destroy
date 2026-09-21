@@ -3,4 +3,4 @@ set -e
 [ "$VERBOSE" -lt 1 ] || set -x
 
 # Destroy all specified stuff
-docker-compose down $DESTROY_FLAGS
+docker compose down $DESTROY_FLAGS

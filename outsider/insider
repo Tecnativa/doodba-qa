@@ -5,6 +5,7 @@ Run any insider script.
 This file needs to be symlinked for each of the available insider scripts to
 serve as an entrypoint only for them.
 """
+
 import logging
 import os
 import subprocess
@@ -13,8 +14,7 @@ import tempfile
 import zipfile
 
 _logger = logging.getLogger("doodba-qa")
-_logger.setLevel(logging.DEBUG if os.environ["VERBOSE"] == "1"
-                 else logging.INFO)
+_logger.setLevel(logging.DEBUG if os.environ["VERBOSE"] == "1" else logging.INFO)
 ARTIFACTS_DIR = os.environ["ARTIFACTS_DIR"]
 LINTERS = {"flake8", "pylint"}
 
@@ -24,7 +24,7 @@ full_script = None
 with open("/usr/local/src/insider/{}".format(script), "r") as fd:
     full_script = fd.read()
 cmd = [
-    "docker-compose", "run", "--rm",
+    "docker","compose", "run", "--rm",
     "-e", "ADDON_CATEGORIES",
     "-e", "VERBOSE",
     "-e", "PYTHONOPTIMIZE",
@@ -45,7 +45,6 @@ if script in LINTERS:
     }
     cmd += [
         # Linters don't need other containers
-        "--no-deps",
         "-e", "WAIT_DB=false",
         "-e", "UNACCENT=false",
         # Direct linter configuration
@@ -57,8 +56,10 @@ if script in LINTERS:
 cmd += ["odoo", "/qa/insider", full_script, *sys.argv[1:]]
 
 # Execute insider command
-with tempfile.TemporaryFile() as tmp_fd, \
-        os.fdopen(sys.stderr.fileno(), "wb", closefd=False) as stderr_bytes:
+with (
+    tempfile.TemporaryFile() as tmp_fd,
+    os.fdopen(sys.stderr.fileno(), "wb", closefd=False) as stderr_bytes,
+):
     result = subprocess.run(cmd, stdout=tmp_fd, stderr=stderr_bytes)
     tmp_fd.flush()
     tmp_fd.seek(0)

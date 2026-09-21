@@ -12,7 +12,7 @@ _logger.setLevel(logging.DEBUG if os.environ["VERBOSE"] == "1"
                  else logging.INFO)
 
 # Create the missing external networks
-compose_contents = subprocess.check_output(["docker-compose", "config"])
+compose_contents = subprocess.check_output(["docker", "compose", "config"])
 compose_contents = yaml.safe_load(compose_contents)
 client = docker.from_env()
 for network in compose_contents.get("networks", {}).values():
