@@ -19,8 +19,8 @@ ENV ADDON_CATEGORIES="--private" \
     DOCKER_VERSION=29.8.1 \
     DOCKER_COMPOSE_VERSION=5.5.1 \
     DOCKER_BUILDX_VERSION=0.37.1
-RUN --mount=type=cache,target=/var/lib/apt/lists \
-    --mount=type=cache,target=/var/cache/apt \
+RUN --mount=type=cache,target=/var/lib/apt/lists,id=apt-lists-doodba-qa \
+    --mount=type=cache,target=/var/cache/apt,id=apt-doodba-qa \
     --mount=type=cache,target=/root/.cache/pip,id=pip-cache \
     --mount=target=/tmp,type=tmpfs \
     apt update \
