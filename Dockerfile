@@ -19,12 +19,8 @@ ENV ADDON_CATEGORIES="--private" \
     DOCKER_VERSION=29.8.1 \
     DOCKER_COMPOSE_VERSION=5.5.1 \
     DOCKER_BUILDX_VERSION=0.37.1
-RUN --mount=type=cache,target=/var/lib/apt/lists,id=apt-lists-doodba-qa \
-    --mount=type=cache,target=/var/cache/apt,id=apt-doodba-qa \
-    --mount=type=cache,target=/root/.cache/pip,id=pip-cache \
-    --mount=target=/tmp,type=tmpfs \
-    apt update \
-    && apt install -yqq \
+RUN apt-get update \
+    && apt-get install -yqq \
         build-essential \
         libxml2-dev \
         libxml2-dev \
@@ -33,6 +29,8 @@ RUN --mount=type=cache,target=/var/lib/apt/lists,id=apt-lists-doodba-qa \
         git \
         jq \
         zlib1g-dev \
+    && apt-get clean \
+    && rm -rf /var/lib/apt/lists/ \
     && pip install --no-cache-dir pipx \
     && pipx install git-aggregator \
     && pipx install pre-commit \
