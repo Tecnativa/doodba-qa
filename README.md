@@ -139,7 +139,8 @@ Run addons' unit tests and report coverage.
 
 Usually you should run [`addons-install`](#addons-install) before.
 
-You will find the HTML report files in `./$ARTIFACTS_DIR/coverage`.
+You will find the HTML report files and an `lcov.info` report (LCOV format, for
+tools that consume machine-readable coverage) in `./$ARTIFACTS_DIR/coverage`.
 
 ### `destroy`
 

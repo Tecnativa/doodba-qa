@@ -30,4 +30,5 @@ coverage run \
 returncode=$?
 coverage report --skip-covered
 coverage html --skip-covered --directory /qa/artifacts/coverage
+coverage lcov -o /qa/artifacts/coverage/lcov.info
 exit $returncode
